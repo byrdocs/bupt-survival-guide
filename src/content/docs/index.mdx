@@ -1,36 +1,126 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
+title: BUPT 生存手册
+description: 北京邮电大学生存指南，覆盖沙河校区和本部校区的完整攻略。
 template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
+  tagline: 北京邮电大学生存指南，从沙河到本部，从入学到毕业的全程陪伴
   image:
     file: ../../assets/houston.webp
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: 沙河校区指南
+      link: /shahe-campus/registration/
       icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
-      icon: external
+    - text: 本部校区指南
+      link: /main-campus/registration/
+      icon: document
       variant: minimal
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
+## 🏫 校区导航
 
 <CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+	<Card title="� 沙河校区" icon="rocket">
+		新生入学第一站，详细的报到流程、宿舍生活、学业指导。
+		[开始探索 →](/shahe-campus/registration/)
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
-	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
-	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="🏛️ 本部校区" icon="home">
+		本科后期与研究生阶段主战场，搬家攻略、学习环境、生活服务全覆盖。
+		[查看攻略 →](/main-campus/registration/)
 	</Card>
 </CardGrid>
+
+## 📚 沙河校区快速导航
+
+<CardGrid>
+	<Card title="🎒 新生报到" icon="star">
+		入学报到流程、必备物品清单、注意事项
+		[查看详情 →](/shahe-campus/registration/)
+	</Card>
+	<Card title="🏠 住宿生活" icon="home">
+		雁北园、雁南园宿舍环境、生活设施介绍
+		[查看详情 →](/shahe-campus/dormitory/)
+	</Card>
+	<Card title="📖 学业指导" icon="open-book">
+		课程安排、成绩计算、保研攻略、选课技巧
+		[查看详情 →](/shahe-campus/academic/)
+	</Card>
+	<Card title="🌐 内网资源" icon="information">
+		校园网络、VPN配置、图书馆资源、软件下载
+		[查看详情 →](/shahe-campus/intranet/)
+	</Card>
+</CardGrid>
+
+## � 本部校区快速导航
+
+<CardGrid>
+	<Card title="📦 搬家攻略" icon="forward">
+		从沙河到本部的搬家指南、时间安排、注意事项
+		[查看详情 →](/main-campus/registration/)
+	</Card>
+	<Card title="🍽️ 餐饮指南" icon="star">
+		新食堂、老食堂、矮子食堂全攻略，周边美食推荐
+		[查看详情 →](/main-campus/dining/)
+	</Card>
+	<Card title="📚 学习环境" icon="open-book">
+		图书馆、教三教室、自习场所、学习资源
+		[查看详情 →](/main-campus/academic/)
+	</Card>
+	<Card title="� 交通出行" icon="forward">
+		地铁站点、公交线路、校门开放时间、出行建议
+		[查看详情 →](/main-campus/transportation/)
+	</Card>
+</CardGrid>
+
+## 🎯 热门主题
+
+<CardGrid>
+	<Card title="🎖️ 军训相关" icon="rocket">
+		沙河校区军训准备、注意事项、实用建议
+		[了解更多 →](/shahe-campus/military-training/)
+	</Card>
+	<Card title="🏛️ 学生组织" icon="group">
+		社团介绍、加入方式、活动福利、组织架构
+		[了解更多 →](/shahe-campus/organization/)
+	</Card>
+	<Card title="🏥 生活服务" icon="heart">
+		本部校医院、体育设施、维修服务、娱乐设施
+		[了解更多 →](/main-campus/services/)
+	</Card>
+	<Card title="💡 实用技巧" icon="puzzle">
+		两校区通用的校园卡使用、银行业务、生活小贴士
+		[了解更多 →](/shahe-campus/misc/)
+	</Card>
+</CardGrid>
+
+---
+
+## 📋 使用指南
+
+### 🎯 适用人群
+- **新入学本科生**：主要参考沙河校区指南
+- **研究生新生**：重点关注本部校区指南  
+- **即将搬迁的同学**：查看本部搬家攻略
+- **在校生**：查找特定生活服务信息
+
+### 📖 使用建议
+- 优先查看对应校区的指南
+- 善用搜索功能快速定位信息
+- 关注更新提醒，获取最新政策变化
+- 结合实际情况，灵活运用指南内容
+
+### 🔄 内容更新
+本手册内容基于多届学长学姐的实际经验编写，会根据学校政策变化和同学反馈持续更新。如发现信息有误或需要补充，欢迎提供反馈。
+
+> 💡 **温馨提示**：校园环境和政策会有变化，部分信息可能存在时效性。遇到具体问题时，建议结合最新官方通知，并咨询学长学姐或相关部门。
+
+---
+
+## � 致谢
+
+本手册内容来源于多个开源项目和众多同学的无私贡献：
+- **沙河校区部分**：主要来源于 [BUPTSE/welcome](https://github.com/BUPTSE/welcome) 开源项目
+- **本部校区部分**：来源于同学们在腾讯在线文档中的集体创作
+
+感谢所有贡献者的无私分享！[查看完整致谢名单 →](/acknowledgments/)
