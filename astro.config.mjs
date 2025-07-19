@@ -43,6 +43,14 @@ export default defineConfig({
           ],
         },
         {
+          label: "参考资料",
+          autogenerate: { directory: "reference" },
+        },
+        {
+          label: "贡献指南",
+          slug: "contributing",
+        },
+        {
           label: "致谢",
           slug: "acknowledgments",
         },
