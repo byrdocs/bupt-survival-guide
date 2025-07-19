@@ -48,7 +48,7 @@ BUPT 生存手册是一个开源的北京邮电大学学生生活指南，旨在
 
 1. **克隆仓库**
 ```bash
-git clone https://github.com/MareDevi/SurviveBUPTManual.git
+git clone https://github.com/byrdocs/SurviveBUPTManual.git
 cd SurviveBUPTManual
 ```
 
@@ -127,8 +127,8 @@ pnpm dev
 
 如有问题或建议，欢迎通过以下方式联系：
 
-- **GitHub Issues**: [提交问题](https://github.com/MareDevi/SurviveBUPTManual/issues)
-- **Pull Requests**: [贡献代码](https://github.com/MareDevi/SurviveBUPTManual/pulls)
+- **GitHub Issues**: [提交问题](https://github.com/byrdocs/SurviveBUPTManual/issues)
+- **Pull Requests**: [贡献代码](https://github.com/byrdocs/SurviveBUPTManual/pulls)
 
 ## 📄 开源协议
 

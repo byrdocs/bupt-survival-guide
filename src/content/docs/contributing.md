@@ -24,7 +24,7 @@ description: 如何为 BUPT 生存手册贡献内容，包含贡献流程、内�
 ### 1. 准备工作
 
 **Fork 项目**：
-1. 访问项目仓库：https://github.com/MareDevi/SurviveBUPTManual
+1. 访问项目仓库：https://github.com/byrdocs/SurviveBUPTManual
 2. 点击右上角的 "Fork" 按钮
 3. 将项目 fork 到您的 GitHub 账户
 
@@ -275,7 +275,7 @@ description: 页面描述，会显示在搜索结果中
 
 如有任何问题或建议，欢迎通过以下方式联系：
 
-- **GitHub Issues**：https://github.com/MareDevi/SurviveBUPTManual/issues
+- **GitHub Issues**：https://github.com/byrdocs/SurviveBUPTManual/issues
 - **项目讨论**：在相关 Pull Request 或 Issue 中讨论
 - **Email**：如果有敏感信息需要私下沟通
 

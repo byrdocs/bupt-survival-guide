@@ -12,7 +12,7 @@ export default defineConfig({
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/MareDevi/SurviveBUPTManual",
+          href: "https://github.com/byrdocs/SurviveBUPTManual",
         },
       ],
       sidebar: [
