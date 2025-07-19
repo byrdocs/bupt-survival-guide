@@ -17,6 +17,9 @@ importers:
       astro:
         specifier: ^5.6.1
         version: 5.12.0(@types/node@24.0.14)(rollup@4.45.1)(typescript@5.8.3)
+      autocorrect-node:
+        specifier: ^2.14.0
+        version: 2.14.0
       sharp:
         specifier: ^0.34.2
         version: 0.34.3
@@ -758,6 +761,41 @@ packages:
   astro@5.12.0:
     resolution: {integrity: sha512-Oov5JsMFHuUmuO+Nx6plfv3nQNK1Xl/8CgLvR8lBhZTjYnraxhuPX5COVAzbom+YLgwaDfK7KBd8zOEopRf9mg==}
     engines: {node: 18.20.8 || ^20.3.0 || >=22.0.0, npm: '>=9.6.5', pnpm: '>=7.1.0'}
+    hasBin: true
+
+  autocorrect-node-darwin-arm64@2.14.0:
+    resolution: {integrity: sha512-l5IRTQz6zYAlkfEc5emIDXBkayD0MIwPPAVXCFMceFwyTNhAJ5veoKqRrsPuBVthIbfYKtAUs9oy9oFoHQn7bw==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  autocorrect-node-darwin-x64@2.14.0:
+    resolution: {integrity: sha512-vRO0lwfXff2Fs41NzdDqN5t4VQ03M0Xsn6Tk4OjMrbjoWJqaEq05KZOTSaSF/wEs/7E1VoaI9Kz+c0fqylVX4Q==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  autocorrect-node-linux-x64-gnu@2.14.0:
+    resolution: {integrity: sha512-v1y1wh340cbhrHSZZP0oPkvWUprDtUIwnBP69Bls27VhQ2ZyVV4eijDNOP//yGUyUunMB0rtWoZaBsq8ugt1Kg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  autocorrect-node-linux-x64-musl@2.14.0:
+    resolution: {integrity: sha512-3LifiLG61VIXBrOITpD/REcg/ZEUuLz/P2XUWMCfGqhzoUb8oFgM3o0A6extvIH2NefiHMndB9kNbfQjXCl3zA==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  autocorrect-node-win32-x64-msvc@2.14.0:
+    resolution: {integrity: sha512-OM6TeGUW0+4R9KtUYTYNEwlInd+b2kumw/B1HCbCzb1F7HpfaNxnZiMk1li0bdPPBDzD5YuzwM30VJZMCWIi5A==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
+  autocorrect-node@2.14.0:
+    resolution: {integrity: sha512-Pkdw3Hr1Wbtpm8f7KYOaPnHFa7TNVo9dyuOffVaNGN3iWWRBs011XBuCJUEmHV097kJkab94cs4P6KJ4pvI41g==}
+    engines: {node: '>= 10'}
     hasBin: true
 
   axobject-query@4.1.0:
@@ -2658,6 +2696,29 @@ snapshots:
       - typescript
       - uploadthing
       - yaml
+
+  autocorrect-node-darwin-arm64@2.14.0:
+    optional: true
+
+  autocorrect-node-darwin-x64@2.14.0:
+    optional: true
+
+  autocorrect-node-linux-x64-gnu@2.14.0:
+    optional: true
+
+  autocorrect-node-linux-x64-musl@2.14.0:
+    optional: true
+
+  autocorrect-node-win32-x64-msvc@2.14.0:
+    optional: true
+
+  autocorrect-node@2.14.0:
+    optionalDependencies:
+      autocorrect-node-darwin-arm64: 2.14.0
+      autocorrect-node-darwin-x64: 2.14.0
+      autocorrect-node-linux-x64-gnu: 2.14.0
+      autocorrect-node-linux-x64-musl: 2.14.0
+      autocorrect-node-win32-x64-msvc: 2.14.0
 
   axobject-query@4.1.0: {}
 

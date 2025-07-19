@@ -42,7 +42,7 @@
 4. **提交更改**
    ```bash
    git add .
-   git commit -m "feat: 添加XXX功能" # 或 "fix: 修复XXX问题"
+   git commit -m "feat: 添加 XXX 功能" # 或 "fix: 修复 XXX 问题"
    ```
 
 5. **推送并创建 PR**

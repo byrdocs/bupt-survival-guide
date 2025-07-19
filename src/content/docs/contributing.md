@@ -229,7 +229,7 @@ description: 页面描述，会显示在搜索结果中
 - 讨论新功能
 
 **Pull Request 讨论**：
-- 代码和内容review
+- 代码和内容 review
 - 技术问题讨论
 - 协作开发
 
