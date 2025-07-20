@@ -3,6 +3,7 @@
 > 北京邮电大学生存指南，从沙河到本部，从入学到毕业的全程陪伴
 
 [![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 
 ## 📖 项目简介
 
