@@ -37,7 +37,7 @@ BUPT 的校园网也许不是最好的，但一定是最便宜的（指完全免
 
 在校外环境，如果需要访问某些只有校园网环境才能访问的网站和资源，你需要使用 VPN 连接到校园网。北邮官方提供的方式有以下三种：
 
-1. **[Atrust VPN](https://vpn.bupt.edu.cn)**：这是推荐使用的方式。需要下载客户端、并使用北邮企业微信/校园网自服务（或在微信中访问 https://netaccount.bupt.edu.cn）查看 OTP 动态口令。登录时，用户名为学号，密码为 OTP 动态口令。
+1. **[Atrust VPN](https://vpn.bupt.edu.cn)**：这是推荐使用的方式。需要下载客户端、并使用北邮企业微信/校园网自服务（或在微信中访问 https://netaccount.bupt.edu.cn ）查看 OTP 动态口令。登录时，用户名为学号，密码为 OTP 动态口令。
 2. **[WebVPN](https://webvpn.bupt.edu.cn)**：这是网页版的 VPN，不需要下载客户端。需要使用企业微信扫码登录。
 3. **[电子资源统一访问系统](https://libcon.bupt.edu.cn)**：此系统虽然是用于在非校园网环境访问数据库，但也可以访问校园网环境下的普通资源。需要使用微信/企业微信扫码登录。
 
@@ -51,7 +51,7 @@ BUPT 的校园网也许不是最好的，但一定是最便宜的（指完全免
 
 ### 连接到 BUPT-mobile
 
-首先下载并安装北邮校园网用于本地网络认证的[证书](https://github.com/FredericDT/BUPTCampusNetworkManual/blob/master/Wireless/XTC-BUPT-mobile-assets/BUPT-Local-Server-Certificate.crt)，命名为"BUPT Local Server Certificate"并信任该证书。
+首先下载并安装北邮校园网用于本地网络认证的[证书](https://wiki.buptnet.icu/files/BUPT-Local-Certificate-Authority.crt)，命名为"BUPT Local Server Certificate"并信任该证书。
 
 然后，连接到 BUPT-mobile。连接时，在 CA 证书一栏选择刚刚安装的"BUPT Local Server Certificate"，域名也填写"BUPT Local Server Certificate"，EAP 方法选择"PEAP"，阶段 2 身份验证选择"MSCHAPV2"，身份和密码分别填写学号和网关账号密码，点击连接即可。
 
