@@ -133,7 +133,7 @@ pnpm dev
 
 ## 📄 开源协议
 
-本项目采用 MIT 协议，详情请参考 [LICENSE](LICENSE) 文件。
+本项目采用 CC-BY-SA-4.0 协议，详情请参考 [LICENSE](LICENSE) 文件。
 
 ---
 
