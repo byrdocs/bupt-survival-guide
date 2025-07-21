@@ -63,7 +63,7 @@ src/content/docs/
 │   ├── dormitory.md
 │   ├── academic.md
 │   ├── life.md
-│   ├── intranet.md
+│   ├── internet.md
 │   ├── military-training.md
 │   ├── organization.md
 │   └── misc.md
