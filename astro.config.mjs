@@ -8,6 +8,10 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "BUPT 生存手册",
+      customCss: [
+        // 添加自定义 CSS 来控制 hero 图片尺寸
+        './src/styles/custom.css',
+      ],
       locales: {
         root: {
           label: "简体中文",

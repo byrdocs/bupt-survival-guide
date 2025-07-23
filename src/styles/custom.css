@@ -1,0 +1,15 @@
+/* 自定义 Hero 图片尺寸 */
+.hero img {
+  width: 600px;
+  height: 600px;
+}
+
+/* 如果需要更清晰的显示，可以使用更大的尺寸 */
+/* 
+.hero img {
+  max-width: 600px;
+  max-height: 600px;
+  width: auto;
+  height: auto;
+} 
+*/
