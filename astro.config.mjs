@@ -1,7 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
-import catppuccin from "@catppuccin/starlight";
 
 // https://astro.build/config
 export default defineConfig({
@@ -21,6 +20,10 @@ export default defineConfig({
       editLink: {
         baseUrl: "https://github.com/byrdocs/SurviveBUPTManual/edit/main/",
       },
+      // 启用最近更新时间显示
+      lastUpdated: true,
+      // 可选：自定义日期格式
+      // 更多配置选项可以在这里添加
       social: [
         {
           icon: "github",
