@@ -59,12 +59,6 @@ export default defineConfig({
           slug: "acknowledgments",
         },
       ],
-      plugins: [
-        catppuccin({
-          dark: { flavor: "macchiato", accent: "lavender" },
-          light: { flavor: "latte", accent: "lavender" },
-        }),
-      ],
     }),
   ],
 });
