@@ -38,6 +38,7 @@ export default defineConfig({
             { label: "序", slug: "新生入学/新生入学" },
             { label: "防范诈骗", slug: "新生入学/防范诈骗" },
             { label: "开学考试", slug: "新生入学/开学考试" },
+            { label: "入学准备", slug: "新生入学/入学准备" },
           ],
         },
         {
@@ -52,6 +53,7 @@ export default defineConfig({
             { label: "校园网", slug: "学习生活/校园网" },
             { label: "常用网站", slug: "学习生活/常用网站" },
             { label: "学生组织", slug: "学习生活/学生组织" },
+            { label: "体育运动", slug: "学习生活/体育运动" },
             { label: "未尽事宜", slug: "学习生活/未尽事宜" },
           ],
         },
