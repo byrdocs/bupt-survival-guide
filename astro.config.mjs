@@ -1,9 +1,16 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
+import remarkMath from "remark-math";
+import rehypeMathJax from "rehype-mathjax";
 
 // https://astro.build/config
 export default defineConfig({
+    markdown: {
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeMathJax],
+  },
+
   integrations: [
     starlight({
       title: "BUPT 生存指南",
