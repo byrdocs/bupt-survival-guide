@@ -3,12 +3,16 @@ import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import remarkMath from "remark-math";
 import rehypeMathJax from "rehype-mathjax";
+import starlightFullViewMode from 'starlight-fullview-mode'
 
 // https://astro.build/config
 export default defineConfig({
-    markdown: {
+  markdown: {
     remarkPlugins: [remarkMath],
     rehypePlugins: [rehypeMathJax],
+    remarkRehype: {
+      footnoteLabel: '附注',
+    },
   },
 
   integrations: [
