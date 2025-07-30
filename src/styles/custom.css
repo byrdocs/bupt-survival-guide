@@ -1,4 +1,9 @@
-/* 自定义 Hero 图片尺寸 - 响应式适配 */
+/*
+  此文件是最后一次稳定、可用的版本。
+  它解决了所有功能性问题，但动画效果不够理想。
+*/
+
+/* 保留用户自定义的 Hero 和主题颜色 */
 .hero img,
 .hero-logo {
   width: 600px;
@@ -9,11 +14,9 @@
   justify-content: center !important;
   align-items: center !important;
 }
-
 .site-title {
   color: var(--sl-color-white);
 }
-
 @media (max-width: 768px) {
   .hero img,
   .hero-logo {
@@ -21,13 +24,11 @@
     max-width: 400px;
     height: auto;
   }
-  
   .hero-html.sl-flex {
     justify-content: center !important;
     align-items: center !important;
   }
 }
-
 :root[data-theme='dark'] {
 	--sl-color-accent-low: #131e4f;
 	--sl-color-accent: #3447ff;
@@ -41,7 +42,6 @@
 	--sl-color-gray-6: #24272f;
 	--sl-color-black: #17181c;
 }
-
 :root[data-theme='light'] {
 	--sl-color-accent-low: #c7d6ff;
 	--sl-color-accent: #364bff;
@@ -56,7 +56,83 @@
 	--sl-color-gray-7: #f5f6f8;
 	--sl-color-black: #ffffff;
 }
-
 mjx-container svg {
   display: inline !important;
+}
+
+/* --- Starlight Overrides --- */
+@layer starlight, starlight-overrides;
+
+@layer starlight-overrides {
+  :root {
+    --sl-sidebar-width: 20rem;
+  }
+
+  /* --- I. 侧边栏隐藏规则 --- */
+
+  .sidebar {
+    transition: transform 0.3s ease-in-out;
+    /* Force hardware acceleration for the sidebar animation. */
+    backface-visibility: hidden;
+    perspective: 1000;
+  }
+
+  html:not([data-has-sidebar]) .sidebar {
+    transform: translateX(-100%);
+  }
+
+  html[data-right-sidebar-hidden="true"] .right-sidebar-container {
+    display: none;
+  }
+
+  /* --- II. 切换按钮样式 --- */
+
+  #left-sidebar-toggle,
+  #right-sidebar-toggle {
+    display: none; /* 默认隐藏 */
+    position: fixed;
+    top: 50%;
+    z-index: 100;
+    background-color: var(--sl-color-bg-sidebar);
+    border: 1px solid var(--sl-color-hairline-shade);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, left 0.3s ease-in-out;
+    opacity: 0.8;
+    transform: translateY(-50%);
+  }
+
+  #left-sidebar-toggle:hover,
+  #right-sidebar-toggle:hover {
+    opacity: 1;
+  }
+
+  /* --- Left Sidebar Button (The Working Model) --- */
+  html[data-has-sidebar] #left-sidebar-toggle {
+    display: flex;
+    left: calc(var(--sl-sidebar-width) - 12px);
+    transform: translateY(-50%) rotate(0deg);
+  }
+
+  html:not([data-has-sidebar]) #left-sidebar-toggle {
+    display: flex;
+    left: 12px;
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  /* --- Right Sidebar Button (positioning is handled by JS) --- */
+  html[data-has-toc="true"] #right-sidebar-toggle {
+    display: flex;
+    transform: translateY(-50%) rotate(0deg);
+  }
+
+  html[data-has-toc="true"][data-right-sidebar-hidden="true"] #right-sidebar-toggle {
+    /* When closed, let CSS handle simple positioning. JS will clear the inline `left` style. */
+    right: 12px;
+    transform: translateY(-50%) rotate(180deg);
+  }
 }

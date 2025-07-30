@@ -3,7 +3,6 @@ import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import remarkMath from "remark-math";
 import rehypeMathJax from "rehype-mathjax";
-import starlightFullViewMode from 'starlight-fullview-mode'
 
 // https://astro.build/config
 export default defineConfig({
@@ -17,11 +16,18 @@ export default defineConfig({
 
   integrations: [
     starlight({
+      components: {
+        // 注册所有三个覆盖
+        Sidebar: './src/components/CustomSidebar.astro',
+        PageSidebar: './src/components/CustomPageSidebar.astro',
+        PageFrame: './src/components/CustomPageFrame.astro',
+      },
       title: "BUPT 生存指南",
       customCss: [
         // 添加自定义 CSS 来控制 hero 图片尺寸
         './src/styles/custom.css',
       ],
+      
       locales: {
         root: {
           label: "简体中文",
