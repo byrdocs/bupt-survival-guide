@@ -15,8 +15,8 @@ const { template } = Astro.locals.starlightRoute.entry.data;
 
 {template !== 'splash' && (
   <>
-    <ToggleLeftSidebar />
-    <ToggleRightSidebar />
+    <ToggleLeftSidebar class="sidebar-toggle" />
+    <ToggleRightSidebar class="sidebar-toggle" />
     <!-- Import the client-side script. Astro will handle bundling and execution. -->
     <script src="../scripts/sidebar-toggle.js"></script>
   </>

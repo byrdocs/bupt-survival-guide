@@ -1,61 +1,63 @@
-/*
-  此文件是最后一次稳定、可用的版本。
-  它解决了所有功能性问题，但动画效果不够理想。
-*/
-
-/* 保留用户自定义的 Hero 和主题颜色 */
 .hero img,
 .hero-logo {
   width: 600px;
   height: 600px;
   object-fit: contain;
 }
+
 .hero-html.sl-flex {
   justify-content: center !important;
   align-items: center !important;
 }
+
 .site-title {
   color: var(--sl-color-white);
 }
+
 @media (max-width: 768px) {
+
   .hero img,
   .hero-logo {
     width: 80vw;
     max-width: 400px;
     height: auto;
   }
+
   .hero-html.sl-flex {
     justify-content: center !important;
     align-items: center !important;
   }
 }
+
 :root[data-theme='dark'] {
-	--sl-color-accent-low: #131e4f;
-	--sl-color-accent: #3447ff;
-	--sl-color-accent-high: #b3c7ff;
-	--sl-color-white: #dfdfd6;
-	--sl-color-gray-1: #eceef2;
-	--sl-color-gray-2: #c0c2c7;
-	--sl-color-gray-3: #888b96;
-	--sl-color-gray-4: #545861;
-	--sl-color-gray-5: #353841;
-	--sl-color-gray-6: #24272f;
-	--sl-color-black: #17181c;
+  --sl-color-accent-low: #131e4f;
+  --sl-color-accent: #3447ff;
+  --sl-color-accent-high: #b3c7ff;
+  --sl-color-white: #dfdfd6;
+  --sl-color-gray-1: #eceef2;
+  --sl-color-gray-2: #c0c2c7;
+  --sl-color-gray-3: #888b96;
+  --sl-color-gray-4: #545861;
+  --sl-color-gray-5: #353841;
+  --sl-color-gray-6: #24272f;
+  --sl-color-black: #17181c;
 }
+
 :root[data-theme='light'] {
-	--sl-color-accent-low: #c7d6ff;
-	--sl-color-accent: #364bff;
-	--sl-color-accent-high: #182775;
-	--sl-color-white: #17181c;
-	--sl-color-gray-1: #24272f;
-	--sl-color-gray-2: #353841;
-	--sl-color-gray-3: #545861;
-	--sl-color-gray-4: #888b96;
-	--sl-color-gray-5: #c0c2c7;
-	--sl-color-gray-6: #eceef2;
-	--sl-color-gray-7: #f5f6f8;
-	--sl-color-black: #ffffff;
+  --sl-color-accent-low: #c7d6ff;
+  --sl-color-accent: #364bff;
+  --sl-color-accent-high: #182775;
+  --sl-color-white: #17181c;
+  --sl-color-gray-1: #24272f;
+  --sl-color-gray-2: #353841;
+  --sl-color-gray-3: #545861;
+  --sl-color-gray-4: #888b96;
+  --sl-color-gray-5: #c0c2c7;
+  --sl-color-gray-6: #eceef2;
+  --sl-color-gray-7: #f5f6f8;
+  --sl-color-black: #ffffff;
 }
+
 mjx-container svg {
   display: inline !important;
 }
@@ -89,7 +91,8 @@ mjx-container svg {
 
   #left-sidebar-toggle,
   #right-sidebar-toggle {
-    display: none; /* 默认隐藏 */
+    display: none;
+    /* 默认隐藏 */
     position: fixed;
     top: 50%;
     z-index: 100;
@@ -134,5 +137,11 @@ mjx-container svg {
     /* When closed, let CSS handle simple positioning. JS will clear the inline `left` style. */
     right: 12px;
     transform: translateY(-50%) rotate(180deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar-toggle {
+    display: none !important;
   }
 }
