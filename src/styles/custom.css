@@ -141,7 +141,8 @@ mjx-container svg {
 }
 
 @media (max-width: 768px) {
-  .sidebar-toggle {
+  #left-sidebar-toggle.sidebar-toggle,
+  #right-sidebar-toggle.sidebar-toggle {
     display: none !important;
   }
 }
