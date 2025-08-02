@@ -1,0 +1,23 @@
+---
+// src/components/CustomPageFrame.astro
+import DefaultPageFrame from '@astrojs/starlight/components/PageFrame.astro';
+import ToggleLeftSidebar from './ToggleLeftSidebar.astro';
+import ToggleRightSidebar from './ToggleRightSidebar.astro';
+
+const { template } = Astro.locals.starlightRoute.entry.data;
+---
+
+<DefaultPageFrame>
+  <slot name="header" slot="header" />
+  <slot name="sidebar" slot="sidebar" />
+  <slot />
+</DefaultPageFrame>
+
+{template !== 'splash' && (
+  <>
+    <ToggleLeftSidebar class="sidebar-toggle" />
+    <ToggleRightSidebar class="sidebar-toggle" />
+    <!-- Import the client-side script. Astro will handle bundling and execution. -->
+    <script src="../scripts/sidebar-toggle.js"></script>
+  </>
+)}
