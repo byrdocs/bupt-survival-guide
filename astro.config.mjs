@@ -69,9 +69,7 @@ export default defineConfig({
             { label: "转专业", slug: "学习生活/转专业" },
             { label: "校园网", slug: "学习生活/校园网" },
             { label: "常用网站", slug: "学习生活/常用网站" },
-            { label: "学生组织", slug: "学习生活/学生组织" },
             { label: "体育运动", slug: "学习生活/体育运动" },
-            { label: "未尽事宜", slug: "学习生活/未尽事宜" },
           ],
         },
         { label: "校区迁移", slug: "校区迁移" },
@@ -98,11 +96,18 @@ export default defineConfig({
             { label: "交通往来", slug: "海淀校区/交通往来" },
           ],
         },
-        { label: "行话辞典", slug: "行话辞典" },
         {
-          label: "贡献指南",
-          slug: "contributing",
+          label: "学生组织",
+          items: [
+            { label: "序", slug: "学生组织/学生组织" },
+            { label: "校级组织", slug: "学生组织/校级组织" },
+            { label: "院级组织", slug: "学生组织/院级组织" },
+            { label: "社团组织", slug: "学生组织/社团组织" },
+          ]
         },
+        { label: "行话辞典", slug: "行话辞典" },
+        { label: "未尽事宜", slug: "未尽事宜" },
+        { label: "贡献指南", slug: "contributing" },
         {
           label: "致谢",
           slug: "acknowledgments",
