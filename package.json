@@ -11,13 +11,13 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.35.1",
-    "astro": "^5.13.1",
+    "@astrojs/starlight": "^0.35.2",
+    "astro": "^5.13.2",
     "autocorrect-node": "^2.14.0",
     "rehype-mathjax": "^7.1.0",
     "remark-directive": "^4.0.0",
     "remark-math": "^6.0.0",
-    "sharp": "^0.34.2"
+    "sharp": "^0.34.3"
   },
   "packageManager": "pnpm@10.13.1"
 }
