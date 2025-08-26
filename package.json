@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@astrojs/starlight": "^0.35.2",
-    "astro": "^5.13.2",
+    "astro": "^5.13.3",
     "autocorrect-node": "^2.14.0",
     "rehype-mathjax": "^7.1.0",
     "remark-directive": "^4.0.0",
