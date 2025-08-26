@@ -16,6 +16,7 @@ export default defineConfig({
 
   integrations: [
     starlight({
+      favicon: '/byrdocs.png',
       components: {
         // 注册所有三个覆盖
         Sidebar: './src/components/CustomSidebar.astro',
