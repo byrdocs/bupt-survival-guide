@@ -63,7 +63,7 @@ export default defineConfig({
           label: "学习生活",
           items: [
             { label: "序", slug: "学习生活/学习生活" },
-            { label: "校历课表", slug: "学习生活/校历课表" },
+            { label: "学期安排", slug: "学习生活/学期安排" },
             { label: "课程安排", slug: "学习生活/课程安排" },
             { label: "成绩构成", slug: "学习生活/成绩构成" },
             { label: "毕业要求", slug: "学习生活/毕业要求" },
