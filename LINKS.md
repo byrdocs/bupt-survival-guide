@@ -26,3 +26,15 @@ https://www.bupt.edu.cn/ggfw/xl.htm  (raw=true)
 
 https://xyy.bupt.edu.cn/info/1058/1391.htm
 
+### 北京邮电大学医院 - 门诊指南
+
+https://xyy.bupt.edu.cn/jyzn/mzzn.htm
+
+北邮校医院门诊指南，包含西土城校区和沙河校区的门诊时间、急诊时间、值班电话等信息。
+
+### 北京邮电大学医院 - 报销指南
+
+https://xyy.bupt.edu.cn/jyzn/bxzn.htm
+
+北邮校医院报销指南，包含学生门诊/住院报销时间、报销流程及所需携带材料（转诊单、收据、药品底方等）。
+
