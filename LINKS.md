@@ -1,6 +1,6 @@
 # 机器人查询链接
 
-该文件用于给 BYR Docs 机器人提供可查询的网址链接。文件不会部署到网站。链接描述可以简要总结页面的用途，包含什么类型的内容，但不要存放页面的具体内容，因为该内容可能随时间更新。
+该文件用于给 BYR Docs 机器人提供可查询的网址链接。文件不会部署到网站。链接描述可以简要总结页面的用途，包含什么类型的内容，但不要存放页面的具体内容，因为该内容可能随时间更新。向用户发送链接时，需要包括 http:// 或 https:// 前缀。
 
 ## 注意事项
 
@@ -49,4 +49,9 @@ https://xyy.bupt.edu.cn/jyzn/bxzn.htm
 https://netwiki.byr.team/
 
 北邮校园网指南网站，涵盖校内上网、VPN 使用、网络故障排除和高阶操作等技术内容。
+
+1. 校内连接校园网：https://netwiki.byr.team/1-quickstart/
+2. 校外访问校园网：https://netwiki.byr.team/1-quickstart/vpn
+3. 简易网络故障排除：https://netwiki.byr.team/2-troubleshooting/
+4. 高阶操作与技术细节：https://netwiki.byr.team/3-advanced/
 
