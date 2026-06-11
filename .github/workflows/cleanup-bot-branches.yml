@@ -1,4 +1,4 @@
-name: Cleanup merged byrdocs-bot branches
+name: Cleanup byrdocs-bot branches
 
 on:
   schedule:
@@ -13,7 +13,7 @@ jobs:
   cleanup:
     runs-on: ubuntu-latest
     steps:
-      - name: Delete merged byrdocs-bot/* branches
+      - name: Delete byrdocs-bot/* branches without an open PR
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -22,11 +22,11 @@ jobs:
           gh api --paginate "repos/$REPO/branches" --jq '.[].name' \
             | grep '^byrdocs-bot/' \
             | while read -r branch; do
-                merged=$(gh pr list --repo "$REPO" --head "$branch" --state merged --json number --jq 'length')
-                if [ "$merged" -gt 0 ]; then
-                  echo "Deleting merged branch: $branch"
+                open=$(gh pr list --repo "$REPO" --head "$branch" --state open --json number --jq 'length')
+                if [ "$open" -eq 0 ]; then
+                  echo "Deleting branch (no open PR): $branch"
                   gh api -X DELETE "repos/$REPO/git/refs/heads/$branch"
                 else
-                  echo "Skipping (no merged PR): $branch"
+                  echo "Skipping (has open PR): $branch"
                 fi
               done
