@@ -1,0 +1,32 @@
+name: Cleanup merged byrdocs-bot branches
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete merged byrdocs-bot/* branches
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh api --paginate "repos/$REPO/branches" --jq '.[].name' \
+            | grep '^byrdocs-bot/' \
+            | while read -r branch; do
+                merged=$(gh pr list --repo "$REPO" --head "$branch" --state merged --json number --jq 'length')
+                if [ "$merged" -gt 0 ]; then
+                  echo "Deleting merged branch: $branch"
+                  gh api -X DELETE "repos/$REPO/git/refs/heads/$branch"
+                else
+                  echo "Skipping (no merged PR): $branch"
+                fi
+              done
