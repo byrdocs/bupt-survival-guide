@@ -1,0 +1,36 @@
+---
+import type { StarlightDocsEntry } from '@astrojs/starlight/types';
+import { getContributors } from '../utils/git';
+
+interface Props {
+  entry: StarlightDocsEntry;
+}
+
+const { entry } = Astro.props;
+const filePath = entry?.filePath ?? '';
+
+const isSplash = entry?.data?.template === 'splash';
+const contributors = (!isSplash && filePath) ? await getContributors(filePath) : [];
+---
+
+{
+  contributors.length > 0 && (
+    <div class="contributors-section">
+      <ul class="contributors-list">
+        {contributors.map((c) => (
+          <li>
+            <a href={`https://github.com/${c.login}`} target="_blank" rel="noopener noreferrer" title={c.name}>
+              <img
+                src={c.avatarUrl}
+                alt={c.name}
+                width="32"
+                height="32"
+                loading="lazy"
+              />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}

@@ -22,6 +22,8 @@ export default defineConfig({
         Sidebar: './src/components/CustomSidebar.astro',
         PageSidebar: './src/components/CustomPageSidebar.astro',
         PageFrame: './src/components/CustomPageFrame.astro',
+        Footer: './src/components/CustomFooter.astro',
+        PageTitle: './src/components/CustomPageTitle.astro',
       },
       title: "BUPT 生存指南",
       customCss: [
