@@ -13,6 +13,8 @@ const { template } = Astro.locals.starlightRoute.entry.data;
   <slot />
 </DefaultPageFrame>
 
+<script src="../scripts/image-zoom.js"></script>
+
 {template !== 'splash' && (
   <>
     <ToggleLeftSidebar class="sidebar-toggle" />

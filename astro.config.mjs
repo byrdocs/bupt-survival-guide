@@ -29,6 +29,8 @@ export default defineConfig({
       customCss: [
         // 添加自定义 CSS 来控制 hero 图片尺寸
         './src/styles/custom.css',
+        // 图片点击放大
+        './src/styles/image-zoom.css',
       ],
       
       locales: {
