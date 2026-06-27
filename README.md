@@ -3,7 +3,7 @@
 > 北京邮电大学生存指南，从沙河到本部，从入学到毕业的全程陪伴
 
 [![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
-[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC_BY--NC--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 ## 项目简介
 
@@ -48,6 +48,7 @@ BUPT 生存指南是一个开源的北京邮电大学学生生活指南，旨在
 
 - **沙河校区部分**：主要来源于 [BUPTSE/welcome](https://github.com/BUPTSE/welcome) 开源项目
 - **本部校区部分**：来源于同学们在腾讯在线文档中的集体创作
+- **宿舍对比图**：来源于 [BUPT-freshatlas](https://github.com/ArtveFlinaInBupt/freshatlas)（CC BY-NC-SA 4.0），在本项目中经过拆分/裁剪等修改
 
 感谢所有贡献者的无私分享！完整的致谢名单请查看：[致谢页面](./src/content/docs/acknowledgments.md)
 
@@ -65,7 +66,7 @@ BUPT 生存指南是一个开源的北京邮电大学学生生活指南，旨在
 
 ## 开源协议
 
-本项目采用 CC-BY-SA-4.0 协议，详情请参考 [LICENSE](LICENSE) 文件。
+本项目采用 CC BY-NC-SA-4.0（署名—非商业性使用—相同方式共享）协议，详情请参考 [LICENSE](LICENSE) 文件。
 
 ---
 

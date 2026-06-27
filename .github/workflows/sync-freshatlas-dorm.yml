@@ -1,0 +1,171 @@
+name: Sync freshatlas Dorm Image
+
+# 轮询 ArtveFlinaInBupt/freshatlas：代码只比对最新 commit 是否与“上次已处理的 commit”
+# （存于 Actions 缓存）不同；不同才启动 Claude，由 Claude 判断宿舍是否变化、
+# 改 freshatlas 代码把沙河 / 本部拆成两张 PNG、更新文档并提 PR，最后推进缓存。
+
+on:
+  schedule:
+    # 每天 21:17 UTC（北京时间次日 05:17）轮询一次
+    - cron: "17 21 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "强制重新生成宿舍图片（忽略 commit 比对）"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-freshatlas-dorm
+  cancel-in-progress: false
+
+env:
+  FRESHATLAS_REPO: ArtveFlinaInBupt/freshatlas
+
+jobs:
+  # ---- 第一步：纯代码比对 commit，决定是否需要启动 Claude ----
+  # 唯一的状态来源是 Actions build cache 里的“上次已成功处理的 commit”。
+  # 代码只比对它与最新 commit 是否一致；是否真的更新宿舍、以及是否推进缓存，
+  # 都由 Claude 决定（成功/无变化才推进，失败则不推进以便下次重试）。
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.compare.outputs.should_run }}
+      old_commit: ${{ steps.compare.outputs.old_commit }}
+      new_commit: ${{ steps.compare.outputs.new_commit }}
+    steps:
+      - name: Restore last processed commit
+        uses: actions/cache/restore@v4
+        with:
+          path: freshatlas/.last-polled-commit
+          key: freshatlas-polled-${{ github.run_id }}
+          restore-keys: |
+            freshatlas-polled-
+
+      - name: Compare freshatlas commit
+        id: compare
+        env:
+          FORCE: ${{ github.event.inputs.force }}
+        run: |
+          set -euo pipefail
+
+          # 代码只判断最新 commit 是否与“上次已处理的 commit”不同。
+          LATEST=$(git ls-remote "https://github.com/${FRESHATLAS_REPO}.git" refs/heads/main | cut -f1)
+          if [ -z "$LATEST" ]; then
+            echo "::error::无法获取 freshatlas 最新 commit"
+            exit 1
+          fi
+
+          BASE=""
+          [ -f freshatlas/.last-polled-commit ] && BASE=$(tr -d '[:space:]' < freshatlas/.last-polled-commit)
+
+          echo "last processed : ${BASE:-<空>}"
+          echo "latest         : $LATEST"
+
+          # Claude 的 diff 基准为上次已处理的 commit（可能为空，表示首次运行）。
+          echo "old_commit=$BASE" >> "$GITHUB_OUTPUT"
+          echo "new_commit=$LATEST" >> "$GITHUB_OUTPUT"
+
+          if [ "${FORCE:-false}" = "true" ]; then
+            echo "force=true，强制运行"
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          elif [ "$BASE" = "$LATEST" ]; then
+            echo "最新 commit 已处理过，跳过"
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "出现未处理过的新 commit，启动 Claude 判断宿舍是否变化"
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  # ---- 第二步：启动 Claude 生成图片并提 PR ----
+  update:
+    needs: check
+    if: needs.check.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
+      FRESHATLAS_OLD_COMMIT: ${{ needs.check.outputs.old_commit }}
+      FRESHATLAS_NEW_COMMIT: ${{ needs.check.outputs.new_commit }}
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clone freshatlas at target commit
+        run: |
+          set -euo pipefail
+          git clone "https://github.com/${FRESHATLAS_REPO}.git" freshatlas
+          git -C freshatlas checkout "$FRESHATLAS_NEW_COMMIT"
+
+      - name: Install Typst
+        uses: typst-community/setup-typst@v4
+        with:
+          typst-version: 0.15.0
+
+      - name: Install Fontist
+        uses: fontist/setup-fontist@v2
+
+      - name: Install Fontist fonts
+        run: |
+          mkdir -p ~/.local/share/fonts/fontist/fonts
+          fontist config set fonts_path ~/.local/share/fonts/fontist/fonts
+          fontist install "STIX Two Math"
+          fontist install "STIX Two Text"
+          fontist install "Fira Code"
+
+      - name: Install Source Han Serif / Sans SC
+        run: |
+          curl -L https://github.com/adobe-fonts/source-han-serif/releases/download/2.003R/09_SourceHanSerifSC.zip -o SourceHanSerifSC.zip
+          curl -L https://github.com/adobe-fonts/source-han-sans/releases/download/2.005R/09_SourceHanSansSC.zip -o SourceHanSansSC.zip
+          unzip -q SourceHanSerifSC.zip -d ~/.local/share/fonts/source-han-serif
+          unzip -q SourceHanSansSC.zip -d ~/.local/share/fonts/source-han-sans
+          fc-cache -fv
+
+      - name: Check typst & fonts
+        run: typst fonts | grep -Ei "stix|fira|source han" || true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run Claude to update dorm images
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_BASE_URL: ${{ secrets.ANTHROPIC_BASE_URL }}
+          ANTHROPIC_DEFAULT_OPUS_MODEL: "anthropic/claude-opus-4.8"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # 配置 git 身份，供 Claude 创建分支与提交使用
+          git config user.name "byrdocs-bot"
+          git config user.email "bot@byrdocs.org"
+
+          PROMPT=$(cat .github/prompts/update-dorm-image.md)
+          claude -p "freshatlas 已克隆在 ./freshatlas（已检出目标 commit ${FRESHATLAS_NEW_COMMIT}）。
+          上次已成功处理的 commit 为 '${FRESHATLAS_OLD_COMMIT}'（若为空字符串表示首次运行、无基准），目标 commit 为 ${FRESHATLAS_NEW_COMMIT}。
+
+          ${PROMPT}" \
+            --model opus \
+            --output-format stream-json \
+            --permission-mode bypassPermissions \
+            --verbose
+
+      # 仅当 Claude 决定推进时（成功处理或确认无变化）才会写出 freshatlas/.last-polled-commit，
+      # 此时保存到缓存；若 Claude 因失败（如编译错误）未写出该文件，则不保存，下次重试。
+      - name: Save last processed commit
+        if: ${{ always() && hashFiles('freshatlas/.last-polled-commit') != '' }}
+        uses: actions/cache/save@v4
+        with:
+          path: freshatlas/.last-polled-commit
+          key: freshatlas-polled-${{ github.run_id }}
+
