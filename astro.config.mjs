@@ -108,6 +108,7 @@ export default defineConfig({
             { label: "校级组织", slug: "学生组织/校级组织" },
             { label: "院级组织", slug: "学生组织/院级组织" },
             { label: "社团组织", slug: "学生组织/社团组织" },
+            { label: "其它形式", slug: "学生组织/其它形式" },
           ]
         },
         { label: "行话辞典", slug: "行话辞典" },
