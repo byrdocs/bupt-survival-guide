@@ -50,7 +50,8 @@ cp freshatlas/content/dormitory.typ freshatlas/content/dormitory-benbu.typ
 1. 表头删掉 `tcell(rowspan: 3)[*所在校区*],` 这一项；
 2. `columns:` 里的 auto 列数 **减 1**（本次 `(..(auto,) * 16, 20em)` → `* 15`）；
 3. `align:` 中让「其他说明」列左对齐的列号判断 **减 1**（本次 `x == 16` → `x == 15`）；
-4. 宿舍楼列从第 1 列变第 0 列：`#let dorm = tcell.with(x: 1)` → `x: 0`。
+4. 宿舍楼列从第 1 列变第 0 列：`#let dorm = tcell.with(x: 1)` → `x: 0`；
+5. 删去页码，导出为图片不需要页码。
 
 （其余配置单元格不写死 `x`、靠自动排布，删掉首列后会自然左移，无需改。含 `colspan` 的整行单元格如「研究生楼」其 colspan 数值不变。）
 
