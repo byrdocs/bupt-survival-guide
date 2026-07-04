@@ -1,0 +1,228 @@
+name: Sync Academic Calendar
+
+on:
+  schedule:
+    - cron: "23 20 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "强制启动 Claude（忽略比对，用于 bootstrap / 调试）"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-academic-calendar
+  cancel-in-progress: false
+
+env:
+  CALENDAR_URL: https://www.bupt.edu.cn/ggfw/xl.htm
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.decide.outputs.should_run }}
+      bootstrap: ${{ steps.decide.outputs.bootstrap }}
+      phase_changed: ${{ steps.decide.outputs.phase_changed }}
+      calendar_changed: ${{ steps.decide.outputs.calendar_changed }}
+      target_phase: ${{ steps.decide.outputs.target_phase }}
+      new_urls: ${{ steps.decide.outputs.new_urls }}
+      reason: ${{ steps.decide.outputs.reason }}
+    steps:
+      # checkout 必须在 cache/restore 之前：checkout 默认 clean 会清掉 .gitignore 的 .calendar-sync/
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      - name: Restore calendar sync state
+        uses: actions/cache/restore@v4
+        with:
+          path: .calendar-sync
+          key: academic-calendar-${{ github.run_id }}
+          restore-keys: |
+            academic-calendar-
+
+      - name: Decide whether to run
+        id: decide
+        env:
+          FORCE: ${{ github.event.inputs.force }}
+          FETCH_MCP_TOKEN: ${{ secrets.FETCH_MCP_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          STATE=.calendar-sync/state.json
+          DOC=src/content/docs/学习生活/学期安排.md
+          TODAY=$(TZ=Asia/Shanghai date +%F)
+          echo "北京时间今日：$TODAY"
+
+          bootstrap=false
+          phase_changed=false
+          calendar_changed=false
+          target_phase=""
+          new_urls=""
+          reasons=""
+
+          # 文档中当前生效的阶段——真实来源是 main 分支的文档本文（而非缓存）：
+          # 取「当前时间为 **X**。」中加粗的 X。未合并的 PR 不改变这里 → 会持续触发直到合入，
+          # 从根本上避免「PR 未合并却已推进缓存、导致漏更新」。
+          DOC_PHASE=$(grep '当前时间为' "$DOC" | grep -oE '\*\*[^*]+\*\*' | head -1 | sed 's/\*\*//g' | sed 's/^ *//; s/ *$//')
+          echo "文档当前阶段：${DOC_PHASE:-<空>}"
+
+          if [ ! -f "$STATE" ]; then
+            echo "未找到状态文件，按首次运行（bootstrap）处理"
+            bootstrap=true
+            reasons="首次运行/缓存丢失（bootstrap）"
+          else
+            # 阶段切换：schedule 中 date<=今日 的最大 date 对应 phase（= 今日应处于的阶段）
+            target_phase=$(jq -r --arg t "$TODAY" \
+              '[.schedule[]? | select(.date <= $t)] | sort_by(.date) | last | .phase // ""' "$STATE")
+            echo "按时间表今日应处于：${target_phase:-<无>}"
+            if [ -n "$target_phase" ] && [ "$target_phase" != "$DOC_PHASE" ]; then
+              phase_changed=true
+              reasons="阶段切换：$DOC_PHASE → $target_phase"
+            fi
+          fi
+
+          # 是否暑假：优先用时间表推算的今日阶段，缺失时回退到文档阶段。
+          # 用日期驱动的推算值，可在「暑假」阶段 PR 尚未合并时就开始比对校历。
+          EFFECTIVE_PHASE="${target_phase:-$DOC_PHASE}"
+          case "$EFFECTIVE_PHASE" in
+            *暑假*)
+              if [ -f "$STATE" ]; then
+                echo "处于暑假，抓取校历网页比对图片链接"
+                RESP=$(curl -sS -X POST https://fetch-mcp.youx.am/api/fetch \
+                  -H "Authorization: Bearer ${FETCH_MCP_TOKEN}" \
+                  -H "Content-Type: application/json" \
+                  -d "{\"url\":\"${CALENDAR_URL}\",\"raw\":true,\"includeMetadata\":false}" || echo '')
+                MD=$(printf '%s' "$RESP" | jq -r 'if .ok then .markdown else empty end' 2>/dev/null || echo '')
+                if [ -z "$MD" ]; then
+                  echo "::warning::抓取校历网页失败或为空，本次跳过校历比对"
+                else
+                  new_urls=$(printf '%s' "$MD" \
+                    | grep -oE '/__local/[A-Za-z0-9/_.]+\.jpg' \
+                    | sort -u \
+                    | sed 's#^#https://www.bupt.edu.cn#' \
+                    | paste -sd ' ' -)
+                  old_urls=$(jq -r '(.calendar_image_urls // []) | sort | join(" ")' "$STATE")
+                  echo "旧图片链接：${old_urls:-<空>}"
+                  echo "新图片链接：${new_urls:-<空>}"
+                  if [ -n "$new_urls" ] && [ "$new_urls" != "$old_urls" ]; then
+                    calendar_changed=true
+                    if [ -n "$reasons" ]; then reasons="$reasons；校历更新"; else reasons="校历更新（图片链接变化）"; fi
+                  fi
+                fi
+              fi
+              ;;
+            *)
+              echo "非暑假阶段，跳过校历网页抓取"
+              ;;
+          esac
+
+          should_run=false
+          if [ "${FORCE:-false}" = "true" ]; then
+            should_run=true
+            reasons="手动强制运行${reasons:+；$reasons}"
+          elif [ "$bootstrap" = "true" ] || [ "$phase_changed" = "true" ] || [ "$calendar_changed" = "true" ]; then
+            should_run=true
+          fi
+
+          echo "should_run=$should_run"
+          echo "原因：${reasons:-无变化}"
+
+          {
+            echo "should_run=$should_run"
+            echo "bootstrap=$bootstrap"
+            echo "phase_changed=$phase_changed"
+            echo "calendar_changed=$calendar_changed"
+            echo "target_phase=$target_phase"
+            echo "new_urls=$new_urls"
+            echo "reason=${reasons:-无变化}"
+          } >> "$GITHUB_OUTPUT"
+
+      # 无需启动 Claude 时，把（未变的）状态原样存回缓存以刷新 TTL、保持持久化。
+      # 需要启动时，由 update job 在 Claude 结束后保存（含 Claude 写入的新状态）。
+      - name: Refresh cache TTL (no run)
+        if: ${{ steps.decide.outputs.should_run == 'false' && hashFiles('.calendar-sync/state.json') != '' }}
+        uses: actions/cache/save@v4
+        with:
+          path: .calendar-sync
+          key: academic-calendar-${{ github.run_id }}
+
+  # ---- 第二步：启动 Claude 读校历、改文档、算时间表、提 PR ----
+  update:
+    needs: check
+    if: needs.check.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
+      RUN_BOOTSTRAP: ${{ needs.check.outputs.bootstrap }}
+      RUN_PHASE_CHANGED: ${{ needs.check.outputs.phase_changed }}
+      RUN_CALENDAR_CHANGED: ${{ needs.check.outputs.calendar_changed }}
+      RUN_TARGET_PHASE: ${{ needs.check.outputs.target_phase }}
+      RUN_NEW_URLS: ${{ needs.check.outputs.new_urls }}
+      RUN_REASON: ${{ needs.check.outputs.reason }}
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore calendar sync state
+        uses: actions/cache/restore@v4
+        with:
+          path: .calendar-sync
+          key: academic-calendar-${{ github.run_id }}
+          restore-keys: |
+            academic-calendar-
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install project dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run Claude to sync academic calendar
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_BASE_URL: ${{ secrets.ANTHROPIC_BASE_URL }}
+          ANTHROPIC_DEFAULT_OPUS_MODEL: "anthropic/claude-opus-4.8"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FETCH_MCP_TOKEN: ${{ secrets.FETCH_MCP_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config user.name "byrdocs-bot"
+          git config user.email "bot@byrdocs.org"
+
+          TODAY=$(date +%F)
+          PROMPT=$(cat .github/prompts/update-academic-calendar.md)
+          claude -p "你正在 byrdocs/bupt-survival-guide 的 GitHub Action 中运行。今天是 ${TODAY}（北京时间）。
+
+          本次启动原因：${RUN_REASON}
+          标志位：bootstrap=${RUN_BOOTSTRAP}，phase_changed=${RUN_PHASE_CHANGED}，calendar_changed=${RUN_CALENDAR_CHANGED}。
+          按时间表今日应处于的阶段 target_phase='${RUN_TARGET_PHASE}'（可能为空，bootstrap 时需你自行推算）。
+          check 阶段抓到的最新校历图片链接 new_urls='${RUN_NEW_URLS}'（空格分隔；仅在暑假抓取，calendar_changed=true 时可直接使用，否则为空需你自行抓取）。
+          抓取北邮校历网页需用 fetch-mcp：token 在环境变量 FETCH_MCP_TOKEN 中；校历图片可直接 curl 下载。
+
+          ${PROMPT}" \
+            --model opus \
+            --output-format stream-json \
+            --permission-mode bypassPermissions \
+            --verbose
+
+      - name: Save calendar sync state
+        if: ${{ always() && hashFiles('.calendar-sync/state.json') != '' }}
+        uses: actions/cache/save@v4
+        with:
+          path: .calendar-sync
+          key: academic-calendar-${{ github.run_id }}
