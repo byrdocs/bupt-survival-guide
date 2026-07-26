@@ -15,7 +15,7 @@ async function fetchFromGitHubAPI(filePath: string): Promise<Contributor[]> {
   const token = process.env.GITHUB_TOKEN;
   if (!token) throw new Error('GITHUB_TOKEN not set');
 
-  const url = `https://api.github.com/repos/byrdocs/SurviveBUPTManual/commits?path=${encodeURIComponent(filePath)}&per_page=50`;
+  const url = `https://api.github.com/repos/byrdocs/bupt-survival-guide/commits?path=${encodeURIComponent(filePath)}&per_page=50`;
 
   const res = await fetch(url, {
     headers: {

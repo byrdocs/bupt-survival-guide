@@ -40,7 +40,7 @@ export default defineConfig({
         },
       },
       editLink: {
-        baseUrl: "https://github.com/byrdocs/SurviveBUPTManual/edit/main/",
+        baseUrl: "https://github.com/byrdocs/bupt-survival-guide/edit/main/",
       },
       // 启用最近更新时间显示
       lastUpdated: true,
@@ -50,7 +50,7 @@ export default defineConfig({
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/byrdocs/SurviveBUPTManual",
+          href: "https://github.com/byrdocs/bupt-survival-guide",
         },
       ],
       sidebar: [
