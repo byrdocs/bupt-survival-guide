@@ -7,7 +7,7 @@ import rehypeMathJax from "rehype-mathjax";
 // https://astro.build/config
 export default defineConfig({
   markdown: {
-    remarkPlugins: [remarkMath],
+    remarkPlugins: [remarkMath, './src/plugins/curriculum.ts'],
     rehypePlugins: [rehypeMathJax],
     remarkRehype: {
       footnoteLabel: '附注',
