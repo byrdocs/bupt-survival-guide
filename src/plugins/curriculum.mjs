@@ -1,19 +1,10 @@
-interface CurriculumProgram {
-  id: string;
-  title: string;
-  school: string;
-  year: string;
-  type: string;
-  major: { type: string; name: string }[];
-}
-
 const API_URL = 'https://curriculum.byrdocs.org';
 
-let cachedPrograms: CurriculumProgram[] | null = null;
-let cachedError: string | null = null;
-let fetchPromise: Promise<void> | null = null;
+let cachedPrograms = null;
+let cachedError = null;
+let fetchPromise = null;
 
-async function fetchPrograms(): Promise<void> {
+async function fetchPrograms() {
   if (cachedPrograms !== null || cachedError !== null) return;
   if (fetchPromise) return fetchPromise;
 
@@ -35,8 +26,8 @@ async function fetchPrograms(): Promise<void> {
   return fetchPromise;
 }
 
-function buildHTML(programs: CurriculumProgram[]): string {
-  const schools = new Map<string, CurriculumProgram[]>();
+function buildHTML(programs) {
+  const schools = new Map();
   for (const p of programs) {
     const list = schools.get(p.school) ?? [];
     list.push(p);
@@ -47,15 +38,8 @@ function buildHTML(programs: CurriculumProgram[]): string {
   for (const [school, schoolPrograms] of schools) {
     html += '<li>' + school + '<ul>';
     for (const program of schoolPrograms) {
-      const href =
-        API_URL +
-        '/' +
-        program.id +
-        '?title=' +
-        encodeURIComponent(program.title) +
-        '.pdf';
-      html +=
-        '<li><a href="' + href + '">' + program.year + '级</a>';
+      const href = API_URL + '/' + program.id + '?title=' + encodeURIComponent(program.title) + '.pdf';
+      html += '<li><a href="' + href + '">' + program.year + '级</a>';
       //html += '<ul>';
       //for (const m of program.major) {
       //  html += '<li>' + m.type + ' - ' + m.name + '</li>';
@@ -70,7 +54,7 @@ function buildHTML(programs: CurriculumProgram[]): string {
 }
 
 export default function remarkCurriculum() {
-  return async function (tree: any) {
+  return async function (tree) {
     await fetchPrograms();
 
     for (let i = 0; i < tree.children.length; i++) {
