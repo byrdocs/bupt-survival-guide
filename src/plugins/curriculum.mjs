@@ -27,29 +27,38 @@ async function fetchPrograms() {
 }
 
 function buildHTML(programs) {
-  const schools = new Map();
+  const yearSet = new Set();
+  const schoolMap = new Map();
   for (const p of programs) {
-    const list = schools.get(p.school) ?? [];
-    list.push(p);
-    if (!schools.has(p.school)) schools.set(p.school, list);
+    yearSet.add(p.year);
+    const byYear = schoolMap.get(p.school) ?? {};
+    byYear[p.year] = p;
+    if (!schoolMap.has(p.school)) schoolMap.set(p.school, byYear);
+  }
+  const years = [...yearSet].sort((a, b) => b - a);
+
+  let html = '<table class="curriculum-table"><thead><tr>';
+  html += '<th class="curriculum-school">学院</th>';
+  for (const y of years) {
+    html += '<th>' + y + '级</th>';
+  }
+  html += '</tr></thead><tbody>';
+
+  for (const [school, byYear] of schoolMap) {
+    html += '<tr><td class="curriculum-school">' + school + '</td>';
+    for (const y of years) {
+      const program = byYear[y];
+      if (program) {
+        const href = CURRICULUM_SITE_URL + '/file/' + program.id + '?title=' + encodeURIComponent(program.title) + '.pdf';
+        html += '<td><a href="' + href + '">' + program.year + '级</a></td>';
+      } else {
+        html += '<td class="curriculum-empty">暂无</td>';
+      }
+    }
+    html += '</tr>';
   }
 
-  let html = '<ul>';
-  for (const [school, schoolPrograms] of schools) {
-    html += '<li>' + school + '<ul>';
-    for (const program of schoolPrograms) {
-      const href = CURRICULUM_SITE_URL + '/file/' + program.id + '?title=' + encodeURIComponent(program.title) + '.pdf';
-      html += '<li><a href="' + href + '">' + program.year + '级</a>';
-      //html += '<ul>';
-      //for (const m of program.major) {
-      //  html += '<li>' + m.type + ' - ' + m.name + '</li>';
-      //}
-      //html += '</ul>';
-      html += '</li>';
-    }
-    html += '</ul></li>';
-  }
-  html += '</ul>';
+  html += '</tbody></table>';
   return html;
 }
 
