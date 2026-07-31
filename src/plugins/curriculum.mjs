@@ -52,7 +52,7 @@ function buildHTML(programs) {
         const href = CURRICULUM_SITE_URL + '/file/' + program.id + '?title=' + encodeURIComponent(program.title) + '.pdf';
         html += '<td><a href="' + href + '">' + program.year + '级</a></td>';
       } else {
-        html += '<td class="curriculum-empty">暂无</td>';
+        html += '<td class="curriculum-empty">暂缺</td>';
       }
     }
     html += '</tr>';
