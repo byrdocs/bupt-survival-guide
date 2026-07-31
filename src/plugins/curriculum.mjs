@@ -1,4 +1,4 @@
-const API_URL = 'https://curriculum.byrdocs.org';
+const CURRICULUM_SITE_URL = process.env.CURRICULUM_SITE_URL;
 
 let cachedPrograms = null;
 let cachedError = null;
@@ -12,7 +12,7 @@ async function fetchPrograms() {
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 10000);
-      const response = await fetch(API_URL, { signal: controller.signal });
+      const response = await fetch(CURRICULUM_SITE_URL, { signal: controller.signal });
       clearTimeout(timeout);
       if (!response.ok) {
         cachedError = `API 返回状态码 ${response.status}`;
@@ -38,7 +38,7 @@ function buildHTML(programs) {
   for (const [school, schoolPrograms] of schools) {
     html += '<li>' + school + '<ul>';
     for (const program of schoolPrograms) {
-      const href = API_URL + '/' + program.id + '?title=' + encodeURIComponent(program.title) + '.pdf';
+      const href = CURRICULUM_SITE_URL + '/file/' + program.id + '?title=' + encodeURIComponent(program.title) + '.pdf';
       html += '<li><a href="' + href + '">' + program.year + '级</a>';
       //html += '<ul>';
       //for (const m of program.major) {
