@@ -19,8 +19,8 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          gh api --paginate "repos/$REPO/branches" --jq '.[].name' \
-            | grep '^byrdocs-bot/' \
+          gh api --paginate "repos/$REPO/branches" \
+            --jq '.[] | .name | select(startswith("byrdocs-bot/"))' \
             | while read -r branch; do
                 open=$(gh pr list --repo "$REPO" --head "$branch" --state open --json number --jq 'length')
                 if [ "$open" -eq 0 ]; then
