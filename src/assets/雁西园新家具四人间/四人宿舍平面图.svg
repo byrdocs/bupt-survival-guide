@@ -164,7 +164,7 @@
 <rect id="washstand" x="241.7" y="1315.2" class="st13" width="79.2" height="205.2"/>
 <ellipse class="st15" cx="281.3" cy="1417.8" rx="25.2" ry="43.2"/>
 <path class="st11" d="M243.5,1412.4h23.4v10.8 M250.7,1405.2v14.4"/>
-<text transform="matrix(1 0 0 1 329 1424.9999)" class="st1 st2 st12">洗手台</text>
+<text transform="matrix(1 0 0 1 329 1424.9999)" class="st1 st2 st12">洗漱台</text>
 <path class="st11" d="M596.3,1333.2h120.6c0,66.6-54,120.6-120.6,120.6 M596.3,1333.2v120.6"/>
 <text transform="matrix(1 0 0 1 672.7998 1397.9999)" class="st1 st2 st8">卫生间</text>
 <path class="st13" d="M671.9,1432.2h64.8c2,0,3.6,1.6,3.6,3.6v70.2c0,2-1.6,3.6-3.6,3.6h-64.8c-2,0-3.6-1.6-3.6-3.6v-70.2
