@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 25.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 1000 1529" style="enable-background:new 0 0 1000 1529;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{fill:#263746;}
+	.st2{font-family:'MicrosoftYaHei';}
+	.st3{font-size:36px;}
+	.st4{font-size:17px;}
+	.st5{fill:none;stroke:#337B9C;stroke-width:1.4715;stroke-miterlimit:7.2;}
+	.st6{fill:none;stroke:#337B9C;stroke-width:1.44;stroke-miterlimit:7.2;}
+	.st7{fill:#337B9C;}
+	.st8{font-size:19.8016px;}
+	.st9{fill:none;stroke:#337B9C;stroke-width:1.2129;stroke-miterlimit:7.2;}
+	.st10{fill:none;stroke:#337B9C;stroke-width:1.9942;stroke-miterlimit:7.2;}
+	.st11{fill:#E0E6EB;stroke:#334653;stroke-width:2.34;stroke-linejoin:round;stroke-miterlimit:7.2;}
+	.st12{fill:none;stroke:#526C7B;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:7.2;}
+	.st13{fill:none;stroke:#526C7B;stroke-width:1.8241;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:7.2;}
+	.st14{font-size:23.4019px;}
+	.st15{fill:#EDF4F8;stroke:#526C7B;stroke-width:2.16;stroke-miterlimit:7.2;}
+	.st16{fill:#F8FBFD;stroke:#78909E;stroke-width:1.8;stroke-miterlimit:7.2;}
+	.st17{fill:#F8FBFD;stroke:#78909E;stroke-width:2.0656;stroke-miterlimit:7.2;}
+	.st18{fill:none;stroke:#526C7B;stroke-width:1.5198;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:7.2;}
+	.st19{fill:none;}
+	.st20{font-family:'SourceHanSansSC-Light-GBpc-EUC-H';}
+	.st21{font-size:35px;}
+</style>
+<desc>
+	平面几何以厘米建模，两图均使用1厘米对应1.8 SVG单位。已标尺寸按标注跨度严格绘制，约数按名义值绘制。墙厚、门宽、未标家具和卫浴尺寸为估绘，非实测施工图。
+	</desc>
+<rect y="0" class="st0" width="1000" height="1529"/>
+<text transform="matrix(1 0 0 1 338 76)" class="st1 st2 st3">双人宿舍平面示意图</text>
+<text transform="matrix(1 0 0 1 643.1578 112)" class="st1 st2 st4">尺寸单位：cm</text>
+<path class="st5" d="M223.7,363V150.6 M360.5,363V150.6"/>
+<path class="st6" d="M223.7,159.6h136.8"/>
+<path class="st7" d="M223.7,159.6l9,4.3v-8.6L223.7,159.6z"/>
+<path class="st7" d="M360.5,159.6l-9,4.3v-8.6L360.5,159.6z"/>
+<text transform="matrix(1 0 0 1 280.4883 148.7999)" class="st7 st2 st8">76</text>
+<path class="st6" d="M360.5,201v-50.4 M693.5,201v-50.4"/>
+<path class="st6" d="M360.5,159.6h333"/>
+<path class="st7" d="M360.5,159.6l9,4.3v-8.6L360.5,159.6z"/>
+<path class="st7" d="M693.5,159.6l-9,4.3v-8.6L693.5,159.6z"/>
+<text transform="matrix(1 0 0 1 509.582 148.7999)" class="st7 st2 st8">185</text>
+<path class="st5" d="M693.5,363V150.6 M776.3,363V150.6"/>
+<path class="st6" d="M693.5,159.6h82.8"/>
+<path class="st7" d="M693.5,159.6l9,4.3v-8.6L693.5,159.6z"/>
+<path class="st7" d="M776.3,159.6l-9,4.3v-8.6L776.3,159.6z"/>
+<text transform="matrix(1 0 0 1 723.2891 148.7999)" class="st7 st2 st8">46</text>
+<path class="st9" d="M344.1,210H160.3 M197.1,363h-36.7"/>
+<path class="st6" d="M173.3,210v153"/>
+<path class="st7" d="M173.3,210l-4.3,9h8.6L173.3,210z"/>
+<path class="st7" d="M173.3,363l-4.3-9h8.6L173.3,363z"/>
+<text transform="matrix(1 0 0 1 135.6777 293.6998)" class="st7 st2 st8">85</text>
+<path class="st10" d="M222.4,363h-62.1 M222.4,447.6h-62.1"/>
+<path class="st6" d="M173.3,363v84.6"/>
+<path class="st7" d="M173.3,363l-4.3,9h8.6L173.3,363z"/>
+<path class="st7" d="M173.3,447.6l-4.3-9h8.6L173.3,447.6z"/>
+<text transform="matrix(1 0 0 1 135.6777 412.5001)" class="st7 st2 st8">47</text>
+<path class="st11" d="M223.7,465.6V363h118.8V210h18v171H241.7v66.6h138.6v18H223.7z"/>
+<path class="st11" d="M693.5,210h18v153h64.8v102.6H626.9v-18h131.4V381h-64.8V210z"/>
+<path class="st12" d="M360.5,215.4h333 M360.5,222.6h333"/>
+<path class="st13" d="M380.3,449.4h246.6v10.8H380.3V449.4z M383.3,454.8h240.3 M383.3,463.8h116.5v-7.2 M499.1,451.2v12.6"/>
+<text transform="matrix(1 0 0 1 502.6992 328.7999)" class="st1 st2 st14">阳台</text>
+<path class="st13" d="M266,469.2L266,469.2c0-2,1.6-3.6,3.6-3.6h52.2c2,0,3.6,1.6,3.6,3.6l0,0c0,2-1.6,3.6-3.6,3.6h-52.2
+	C267.6,472.8,266,471.2,266,469.2z"/>
+<path class="st13" d="M266,480L266,480c0-2,1.6-3.6,3.6-3.6h52.2c2,0,3.6,1.6,3.6,3.6l0,0c0,2-1.6,3.6-3.6,3.6h-52.2
+	C267.6,483.6,266,482,266,480z"/>
+<path class="st11" d="M273.2,465.6v18 M318.2,465.6v18"/>
+<text transform="matrix(1 0 0 1 270 505)" class="st1 st2 st8">暖气管</text>
+<path class="st11" d="M223.7,465.6h18v891h234v18h-252V465.6z"/>
+<path class="st11" d="M758.3,465.6h18v909H592.7v-18h165.6V465.6z"/>
+<text transform="matrix(1 0 0 1 453.1992 494.3995)" class="st1 st2 st8">玻璃推拉门</text>
+<rect id="desk-1" x="241.7" y="618.6" class="st15" width="108" height="162"/>
+<text transform="matrix(1 0 0 1 273.6763 688.7999)" class="st1 st2 st14">桌 1</text>
+<rect id="desk-2" x="650.3" y="618.6" class="st15" width="108" height="162"/>
+<text transform="matrix(1 0 0 1 682.2764 688.7999)" class="st1 st2 st14">桌 2</text>
+<path class="st6" d="M783.5,618.6h48.6 M783.5,780.6h48.6"/>
+<path class="st6" d="M823.1,618.6v162"/>
+<path class="st7" d="M823.1,618.6l-4.3,9h8.6L823.1,618.6z"/>
+<path class="st7" d="M823.1,780.6l-4.3-9h8.6L823.1,780.6z"/>
+<text transform="matrix(1 0 0 1 837.5 706.2003)" class="st7 st2 st8">90</text>
+<path class="st6" d="M650.3,750v-19.8 M758.3,750v-19.8"/>
+<path class="st6" d="M650.3,739.2h108"/>
+<path class="st7" d="M650.3,739.2l9,4.3v-8.6L650.3,739.2z"/>
+<path class="st7" d="M758.3,739.2l-9,4.3v-8.6L758.3,739.2z"/>
+<text transform="matrix(1 0 0 1 692.1885 728.3999)" class="st7 st2 st8">60</text>
+<rect id="bed-1" x="241.7" y="780.6" class="st15" width="162" height="342"/>
+<path class="st16" d="M259.7,787.8h126c5.9,0,10.8,4.9,10.8,10.8v306c0,5.9-4.9,10.8-10.8,10.8h-126c-5.9,0-10.8-4.9-10.8-10.8v-306
+	C248.9,792.7,253.8,787.8,259.7,787.8z"/>
+<text transform="matrix(1 0 0 1 300.6758 944.3995)" class="st1 st2 st14">床位 1</text>
+<rect id="bed-2" x="596.3" y="780.6" class="st15" width="162" height="342"/>
+<path class="st16" d="M614.3,787.8h126c5.9,0,10.8,4.9,10.8,10.8v306c0,5.9-4.9,10.8-10.8,10.8h-126c-5.9,0-10.8-4.9-10.8-10.8v-306
+	C603.5,792.7,608.4,787.8,614.3,787.8z"/>
+<text transform="matrix(1 0 0 1 655.2764 944.3995)" class="st1 st2 st14">床位 2</text>
+<path class="st6" d="M783.5,780.6h48.6 M783.5,1122.6h48.6"/>
+<path class="st6" d="M823.1,780.6v342"/>
+<path class="st7" d="M823.1,780.6l-4.3,9h8.6L823.1,780.6z"/>
+<path class="st7" d="M823.1,1122.6l-4.3-9h8.6L823.1,1122.6z"/>
+<text transform="matrix(1 0 0 1 837.5 958.2003)" class="st7 st2 st8">190</text>
+<path class="st6" d="M596.3,1091.4v-19.8 M758.3,1091.4v-19.8"/>
+<path class="st6" d="M596.3,1080.6h162"/>
+<path class="st7" d="M596.3,1080.6l9,4.3v-8.6L596.3,1080.6z"/>
+<path class="st7" d="M758.3,1080.6l-9,4.3v-8.6L758.3,1080.6z"/>
+<text transform="matrix(1 0 0 1 665.6885 1069.7999)" class="st7 st2 st8">90</text>
+<path class="st6" d="M295.7,465.6v153"/>
+<path class="st7" d="M295.7,465.6l-4.3,9h8.6L295.7,465.6z"/>
+<path class="st7" d="M295.7,618.6l-4.3-9h8.6L295.7,618.6z"/>
+<text transform="matrix(1 0 0 1 310.0996 548.3995)" class="st7 st2 st8">85</text>
+<path class="st6" d="M704.3,465.6v153"/>
+<path class="st7" d="M704.3,465.6l-4.3,9h8.6L704.3,465.6z"/>
+<path class="st7" d="M704.3,618.6l-4.3-9h8.6L704.3,618.6z"/>
+<text transform="matrix(1 0 0 1 718.6992 548.3995)" class="st7 st2 st8">85</text>
+<path class="st11" d="M241.7,1122.6h210.6v50.4h-18v-32.4H241.7V1122.6z"/>
+<path class="st11" d="M434.3,1259.4h18v97.2h-18V1259.4z"/>
+<path class="st12" d="M443.3,1173h-86.4c0,47.7,38.7,86.4,86.4,86.4 M443.3,1173v86.4"/>
+<path class="st11" d="M596.3,1122.6h162v18h-162V1122.6z"/>
+<rect x="679.1" y="1140.6" class="st16" width="79.2" height="216"/>
+<ellipse class="st15" cx="718.7" cy="1248.6" rx="25.2" ry="43.2"/>
+<path class="st12" d="M756.5,1243.2h-23.4v10.8 M749.3,1236v14.4"/>
+<text transform="matrix(1 0 0 1 689 1317.0001)" class="st1 st2 st8">洗漱台</text>
+<ellipse class="st16" cx="281.3" cy="1293.6" rx="21.6" ry="36"/>
+<path class="st16" d="M265.1,1322.4h34.2c3.1,0,5.4,2.3,5.4,5.4v18c0,3.1-2.3,5.4-5.4,5.4h-34.2c-3.1,0-5.4-2.3-5.4-5.4v-18
+	C259.7,1324.7,262,1322.4,265.1,1322.4z"/>
+<text transform="matrix(1 0 0 1 338 1299.0001)" class="st1 st2 st14">卫生间</text>
+<rect x="243" y="1162.2" class="st17" width="9.5" height="32.4"/>
+<path class="st12" d="M252.5,1178.4h27"/>
+<circle class="st12" cx="279.5" cy="1178.4" r="7.2"/>
+<circle class="st12" cx="315.5" cy="1162.2" r="8.1"/>
+<path class="st18" d="M309.9,1166l8.5-10.4 M311.7,1169.4l10.3-12.2 M308.3,1162.6l5.4-7 M315.9,1170.3l6.8-8.5"/>
+<path class="st12" d="M589.1,1374.6v-113.4c-62.6,0-113.4,50.8-113.4,113.4 M585.5,1374.6v-113.4"/>
+<rect x="727.7" y="1479.5" class="st19" width="295.1" height="42.4"/>
+<text transform="matrix(1 0 0 1 727.7 1510.3213)" class="st20 st21">制图：BYR Docs</text>
+</svg>
