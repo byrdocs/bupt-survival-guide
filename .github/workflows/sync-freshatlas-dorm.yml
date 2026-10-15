@@ -107,16 +107,24 @@ jobs:
         with:
           typst-version: 0.15.0
 
-      - name: Install Fontist
-        uses: fontist/setup-fontist@v2
-
-      - name: Install Fontist fonts
+      # Download pinned upstream font files directly. Fontist's native Ruby
+      # dependencies can fail before any fonts are installed on the runner.
+      - name: Install STIX Two and Fira Code
         run: |
-          mkdir -p ~/.local/share/fonts/fontist/fonts
-          fontist config set fonts_path ~/.local/share/fonts/fontist/fonts
-          fontist install "STIX Two Math"
-          fontist install "STIX Two Text"
-          fontist install "Fira Code"
+          set -euo pipefail
+          FONT_DIR="$HOME/.local/share/fonts"
+          mkdir -p "$FONT_DIR/stix-two" "$FONT_DIR/fira-code"
+          for font in STIXTwoMath-Regular STIXTwoText-Regular STIXTwoText-Italic \
+            STIXTwoText-Medium STIXTwoText-MediumItalic STIXTwoText-SemiBold \
+            STIXTwoText-SemiBoldItalic STIXTwoText-Bold STIXTwoText-BoldItalic; do
+            curl --fail --location --retry 3 \
+              "https://raw.githubusercontent.com/stipub/stixfonts/v2.13b171/fonts/static_otf/$font.otf" \
+              --output "$FONT_DIR/stix-two/$font.otf"
+          done
+          curl --fail --location --retry 3 \
+            https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip \
+            --output "$RUNNER_TEMP/Fira_Code.zip"
+          unzip -q "$RUNNER_TEMP/Fira_Code.zip" 'ttf/*' -d "$FONT_DIR/fira-code"
 
       - name: Install Source Han Serif / Sans SC
         run: |
@@ -127,7 +135,17 @@ jobs:
           fc-cache -fv
 
       - name: Check typst & fonts
-        run: typst fonts | grep -Ei "stix|fira|source han" || true
+        run: |
+          set -euo pipefail
+          FONTS=$(typst fonts)
+          for family in "STIX Two Math" "STIX Two Text" "Fira Code" \
+            "Source Han Serif SC" "Source Han Sans SC"; do
+            if ! grep -Fxq "$family" <<< "$FONTS"; then
+              echo "::error::Missing required font: $family"
+              exit 1
+            fi
+            echo "Found font: $family"
+          done
 
       - name: Setup Node
         uses: actions/setup-node@v4
