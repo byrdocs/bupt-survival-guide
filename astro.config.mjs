@@ -71,6 +71,7 @@ export default defineConfig({
             { label: "课程安排", slug: "学习生活/课程安排" },
             { label: "成绩构成", slug: "学习生活/成绩构成" },
             { label: "毕业要求", slug: "学习生活/毕业要求" },
+            { label: "奖学金相关", slug: "学习生活/奖学金相关" },
             { label: "推免相关", slug: "学习生活/推免相关" },
             { label: "转专业", slug: "学习生活/转专业" },
             { label: "校园网", slug: "学习生活/校园网" },
