@@ -1,8 +1,15 @@
 name: Sync freshatlas Dorm Image
 
 # 轮询 ArtveFlinaInBupt/freshatlas：代码只比对最新 commit 是否与“上次已处理的 commit”
-# （存于 Actions 缓存）不同；不同才启动 Claude，由 Claude 判断宿舍是否变化、
-# 改 freshatlas 代码把沙河 / 本部拆成两张 PNG、更新文档并提 PR，最后推进缓存。
+# （存于 Actions 缓存）不同；不同才启动 Codex，由 Codex 判断宿舍是否变化、
+# 改 freshatlas 代码把沙河 / 本部拆成两张图、更新文档，再由工作流提 PR、推进缓存。
+#
+# 安全模型：freshatlas 是第三方仓库，其内容可能含有 prompt injection。
+# - generate：Codex 在 codex-action 的沙箱里运行（drop-sudo、无网络、只能写工作区），没有 GitHub 写权限。
+#   模型凭据是用 OIDC 向 ai-gateway.byrdocs.org 换来的短期 token，只能调用指定模型。
+#   Codex 只产出数据：两个 .typ 副本、两篇文档、一个 result.json。
+# - publish：不运行 Codex 的任何产物，只把这些文本写回白名单路径，用 Typst 重新编译出 PNG，
+#   构建通过后提 PR。PR 仍需维护者审阅合并。
 
 on:
   schedule:
@@ -15,9 +22,7 @@ on:
         type: boolean
         default: false
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 concurrency:
   group: sync-freshatlas-dorm
@@ -25,12 +30,14 @@ concurrency:
 
 env:
   FRESHATLAS_REPO: ArtveFlinaInBupt/freshatlas
+  GATEWAY: https://ai-gateway.byrdocs.org
+  MODEL: deepseek-v4-flash
 
 jobs:
-  # ---- 第一步：纯代码比对 commit，决定是否需要启动 Claude ----
+  # ---- 第一步：纯代码比对 commit，决定是否需要启动 Codex ----
   # 唯一的状态来源是 Actions build cache 里的“上次已成功处理的 commit”。
-  # 代码只比对它与最新 commit 是否一致；是否真的更新宿舍、以及是否推进缓存，
-  # 都由 Claude 决定（成功/无变化才推进，失败则不推进以便下次重试）。
+  # 代码只比对它与最新 commit 是否一致；是否真的更新宿舍由 Codex 判断，
+  # 成功提 PR 或确认无变化后由 publish 推进缓存，失败则不推进以便下次重试。
   check:
     runs-on: ubuntu-latest
     outputs:
@@ -39,7 +46,7 @@ jobs:
       new_commit: ${{ steps.compare.outputs.new_commit }}
     steps:
       - name: Restore last processed commit
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: freshatlas/.last-polled-commit
           key: freshatlas-polled-${{ github.run_id }}
@@ -66,7 +73,7 @@ jobs:
           echo "last processed : ${BASE:-<空>}"
           echo "latest         : $LATEST"
 
-          # Claude 的 diff 基准为上次已处理的 commit（可能为空，表示首次运行）。
+          # Codex 的 diff 基准为上次已处理的 commit（可能为空，表示首次运行）。
           echo "old_commit=$BASE" >> "$GITHUB_OUTPUT"
           echo "new_commit=$LATEST" >> "$GITHUB_OUTPUT"
 
@@ -77,113 +84,280 @@ jobs:
             echo "最新 commit 已处理过，跳过"
             echo "should_run=false" >> "$GITHUB_OUTPUT"
           else
-            echo "出现未处理过的新 commit，启动 Claude 判断宿舍是否变化"
+            echo "出现未处理过的新 commit，启动 Codex 判断宿舍是否变化"
             echo "should_run=true" >> "$GITHUB_OUTPUT"
           fi
 
-  # ---- 第二步：启动 Claude 生成图片并提 PR ----
-  update:
+  # ---- 第二步：Codex 在沙箱里判断变化、拆分 typ、更新文档 ----
+  generate:
     needs: check
     if: needs.check.outputs.should_run == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      id-token: write
     env:
       TZ: Asia/Shanghai
       FRESHATLAS_OLD_COMMIT: ${{ needs.check.outputs.old_commit }}
       FRESHATLAS_NEW_COMMIT: ${{ needs.check.outputs.new_commit }}
+    outputs:
+      result: ${{ steps.collect.outputs.result }}
     steps:
       - name: Checkout this repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Typst and fonts
+        uses: ./.github/actions/setup-typst-fonts
 
       - name: Clone freshatlas at target commit
         run: |
           set -euo pipefail
-          git clone "https://github.com/${FRESHATLAS_REPO}.git" freshatlas
-          git -C freshatlas checkout "$FRESHATLAS_NEW_COMMIT"
-
-      - name: Install Typst
-        uses: typst-community/setup-typst@v4
-        with:
-          typst-version: 0.15.0
-
-      # Download pinned upstream font files directly. Fontist's native Ruby
-      # dependencies can fail before any fonts are installed on the runner.
-      - name: Install STIX Two and Fira Code
-        run: |
-          set -euo pipefail
-          FONT_DIR="$HOME/.local/share/fonts"
-          mkdir -p "$FONT_DIR/stix-two" "$FONT_DIR/fira-code"
-          for font in STIXTwoMath-Regular STIXTwoText-Regular STIXTwoText-Italic \
-            STIXTwoText-Medium STIXTwoText-MediumItalic STIXTwoText-SemiBold \
-            STIXTwoText-SemiBoldItalic STIXTwoText-Bold STIXTwoText-BoldItalic; do
-            curl --fail --location --retry 3 \
-              "https://raw.githubusercontent.com/stipub/stixfonts/v2.13b171/fonts/static_otf/$font.otf" \
-              --output "$FONT_DIR/stix-two/$font.otf"
-          done
-          curl --fail --location --retry 3 \
-            https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip \
-            --output "$RUNNER_TEMP/Fira_Code.zip"
-          unzip -q "$RUNNER_TEMP/Fira_Code.zip" 'ttf/*' -d "$FONT_DIR/fira-code"
-
-      - name: Install Source Han Serif / Sans SC
-        run: |
-          curl -L https://github.com/adobe-fonts/source-han-serif/releases/download/2.003R/09_SourceHanSerifSC.zip -o SourceHanSerifSC.zip
-          curl -L https://github.com/adobe-fonts/source-han-sans/releases/download/2.005R/09_SourceHanSansSC.zip -o SourceHanSansSC.zip
-          unzip -q SourceHanSerifSC.zip -d ~/.local/share/fonts/source-han-serif
-          unzip -q SourceHanSansSC.zip -d ~/.local/share/fonts/source-han-sans
-          fc-cache -fv
-
-      - name: Check typst & fonts
-        run: |
-          set -euo pipefail
-          FONTS=$(typst fonts)
-          for family in "STIX Two Math" "STIX Two Text" "Fira Code" \
-            "Source Han Serif SC" "Source Han Sans SC"; do
-            if ! grep -Fxq "$family" <<< "$FONTS"; then
-              echo "::error::Missing required font: $family"
-              exit 1
-            fi
-            echo "Found font: $family"
-          done
+          git clone --quiet "https://github.com/${FRESHATLAS_REPO}.git" freshatlas
+          git -C freshatlas checkout --quiet "$FRESHATLAS_NEW_COMMIT"
+          # 第三方仓库：去掉符号链接（可能指向 runner 上的其他文件）和 Codex 会当作指令读取的文件
+          find freshatlas -path freshatlas/.git -prune -o -type l -print -exec rm -f {} +
+          find freshatlas -path freshatlas/.git -prune -o \
+            \( -name AGENTS.md -o -name AGENTS.override.md -o -name .codex -o -name .agents \) -prune -print -exec rm -rf {} +
+          # Codex 的沙箱没有网络：先编译一次原图，把 freshatlas 引用的 Typst 包下载到缓存
+          typst compile freshatlas/content/dormitory.typ "$RUNNER_TEMP/dormitory.pdf" --root freshatlas --input release=
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "22"
 
-      - name: Install Claude Code CLI
-        run: npm install -g @anthropic-ai/claude-code
+      # 让 Codex 能在沙箱里离线跑 pnpm build 自检
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
 
-      - name: Run Claude to update dorm images
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          ANTHROPIC_BASE_URL: ${{ secrets.ANTHROPIC_BASE_URL }}
-          ANTHROPIC_DEFAULT_OPUS_MODEL: "anthropic/claude-opus-5.5"
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Prepare prompt
         run: |
           set -euo pipefail
-          # 配置 git 身份，供 Claude 创建分支与提交使用
+          rm -rf AGENTS.md AGENTS.override.md .codex .agents .dorm-ctx .dorm-out
+          mkdir -p .dorm-ctx .dorm-out
+          {
+            printf 'freshatlas 已克隆在 ./freshatlas（已检出目标 commit %s）。\n' "$FRESHATLAS_NEW_COMMIT"
+            printf "上次已成功处理的 commit 为 '%s'（若为空字符串表示首次运行、无基准），目标 commit 为 %s。\n\n" \
+              "$FRESHATLAS_OLD_COMMIT" "$FRESHATLAS_NEW_COMMIT"
+            cat .github/prompts/update-dorm-image.md
+          } > .dorm-ctx/prompt.md
+
+      - name: Get model gateway token
+        id: gateway
+        run: |
+          set -euo pipefail
+          oidc=$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=ai-review-gateway" | jq -r .value)
+          token=$(curl -fsS -X POST "$GATEWAY/token" -H "Authorization: Bearer $oidc" | jq -r .token)
+          test -n "$token" && test "$token" != null
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+
+      - name: Run Codex
+        uses: openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675 # v1.13
+        timeout-minutes: 50
+        with:
+          openai-api-key: ${{ steps.gateway.outputs.token }}
+          responses-api-endpoint: ${{ env.GATEWAY }}/v1/responses
+          model: ${{ env.MODEL }}
+          codex-version: 0.166.0
+          permission-profile: ":workspace"
+          safety-strategy: drop-sudo
+          prompt-file: .dorm-ctx/prompt.md
+
+      # Codex 之后不再运行任何持有凭据的步骤；这里只把白名单里的文本文件读成 job output，由 publish 处理。
+      # 文件必须是工作区里的普通文件（不能经由符号链接指到别处，比如 /proc/self/environ）。
+      - name: Collect Codex output
+        id: collect
+        run: |
+          set -euo pipefail
+          unset ACTIONS_ID_TOKEN_REQUEST_TOKEN ACTIONS_ID_TOKEN_REQUEST_URL
+          # 返回工作区里的普通文件 $1 的真实路径；经由符号链接或不存在时失败
+          workspace_file() {
+            local real
+            real=$(realpath -e -- "$1" 2>/dev/null) && [ "$real" = "$GITHUB_WORKSPACE/$1" ] && [ -f "$real" ] && echo "$real"
+          }
+
+          if ! out=$(workspace_file .dorm-out/result.json) \
+            || ! jq -e '.status | IN("updated", "unchanged", "failed")' "$out" > /dev/null 2>&1; then
+            echo "::error::Codex 没有产出有效的 .dorm-out/result.json"
+            exit 1
+          fi
+
+          files='{}'
+          if [ "$(jq -r .status "$out")" = updated ]; then
+            for f in freshatlas/content/dormitory-shahe.typ freshatlas/content/dormitory-benbu.typ \
+              "src/content/docs/沙河校区/住宿条件.md" "src/content/docs/海淀校区/住宿条件.md"; do
+              if ! real=$(workspace_file "$f"); then
+                echo "::error::$f 不存在或不是工作区里的普通文件"
+                exit 1
+              fi
+              files=$(jq -c --arg k "$f" --rawfile v "$real" '. + {($k): $v}' <<< "$files")
+            done
+          fi
+
+          result=$(jq -c --argjson files "$files" \
+            '{status, summary: ((.summary // "") | tostring | .[0:2000]), files: $files}' "$out")
+          if [ "${#result}" -gt 800000 ]; then
+            echo "::error::Codex 产出过大（${#result} 字节）"
+            exit 1
+          fi
+          jq -r '"status: \(.status)\nsummary: \(.summary)"' <<< "$result"
+          echo "result=$result" >> "$GITHUB_OUTPUT"
+
+  # ---- 第三步：用 Codex 的文本产出重新编译图片、提 PR、推进缓存 ----
+  publish:
+    needs: [check, generate]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      TZ: Asia/Shanghai
+      FRESHATLAS_NEW_COMMIT: ${{ needs.check.outputs.new_commit }}
+      RESULT: ${{ needs.generate.outputs.result }}
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - name: Check Codex result
+        id: result
+        run: |
+          set -euo pipefail
+          printf '%s' "$RESULT" > "$RUNNER_TEMP/result.json"
+          jq -r '"status: \(.status)\nsummary: \(.summary)"' "$RUNNER_TEMP/result.json"
+          status=$(jq -r .status "$RUNNER_TEMP/result.json")
+          case "$status" in
+            unchanged)
+              echo "宿舍无变化，只推进同步记录"
+              ;;
+            updated)
+              expected='["freshatlas/content/dormitory-benbu.typ","freshatlas/content/dormitory-shahe.typ","src/content/docs/沙河校区/住宿条件.md","src/content/docs/海淀校区/住宿条件.md"]'
+              if ! jq -e --argjson e "$expected" \
+                '(.files | keys | sort) == ($e | sort) and all(.files[]; type == "string")' \
+                "$RUNNER_TEMP/result.json" > /dev/null; then
+                echo "::error::Codex 产出的文件集合不符合预期"
+                exit 1
+              fi
+              ;;
+            failed)
+              echo "::error::Codex 未能完成，下次轮询会重试"
+              exit 1
+              ;;
+            *)
+              echo "::error::无效的 status：$status"
+              exit 1
+              ;;
+          esac
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+
+      - name: Clone freshatlas and apply Codex changes
+        if: steps.result.outputs.status == 'updated'
+        run: |
+          set -euo pipefail
+          git clone --quiet "https://github.com/${FRESHATLAS_REPO}.git" freshatlas
+          git -C freshatlas checkout --quiet "$FRESHATLAS_NEW_COMMIT"
+          find freshatlas -path freshatlas/.git -prune -o -type l -print -exec rm -f {} +
+          # 路径都来自上一步校验过的固定白名单
+          jq -r '.files | keys[]' "$RUNNER_TEMP/result.json" | while IFS= read -r f; do
+            jq -j --arg k "$f" '.files[$k]' "$RUNNER_TEMP/result.json" > "$f"
+          done
+          git status --short
+
+      - name: Setup Typst and fonts
+        if: steps.result.outputs.status == 'updated'
+        uses: ./.github/actions/setup-typst-fonts
+
+      # 这一步没有任何凭据；Typst 只能读 --root 内的文件，也不能执行命令
+      - name: Compile dorm images
+        if: steps.result.outputs.status == 'updated'
+        working-directory: freshatlas
+        run: |
+          set -euo pipefail
+          typst compile content/dormitory-shahe.typ "../src/assets/freshatlas-沙河宿舍对比.png" --root . --input release= --ppi 300
+          typst compile content/dormitory-benbu.typ "../src/assets/freshatlas-本部宿舍对比.png" --root . --input release= --ppi 300
+
+      - name: Setup Node
+        if: steps.result.outputs.status == 'updated'
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+
+      - name: Build site
+        if: steps.result.outputs.status == 'updated'
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - name: Open PR
+        if: steps.result.outputs.status == 'updated'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          files=(
+            "src/assets/freshatlas-沙河宿舍对比.png"
+            "src/assets/freshatlas-本部宿舍对比.png"
+            "src/content/docs/沙河校区/住宿条件.md"
+            "src/content/docs/海淀校区/住宿条件.md"
+          )
+          git add -- "${files[@]}"
+          other=$(git status --porcelain --untracked-files=all -- . ':!src/assets/freshatlas-*.png' ':!src/content/docs/*/住宿条件.md')
+          if [ -n "$other" ]; then
+            echo "::error::出现了预期之外的改动："
+            echo "$other"
+            exit 1
+          fi
+          if git diff --cached --quiet; then
+            echo "图片和文档都与 main 一致，无需提 PR"
+            exit 0
+          fi
+
+          short=${FRESHATLAS_NEW_COMMIT:0:7}
+          branch="byrdocs-bot/sync-freshatlas-dorm-$short"
           git config user.name "byrdocs-bot"
           git config user.email "bot@byrdocs.org"
+          git commit --quiet -m "docs: 同步柏油图谱宿舍对比图（沙河 / 本部分图）" \
+            -m "来源：https://github.com/${FRESHATLAS_REPO}/commit/${FRESHATLAS_NEW_COMMIT}"
+          gh auth setup-git
+          git push --force origin "HEAD:refs/heads/$branch"
 
-          PROMPT=$(cat .github/prompts/update-dorm-image.md)
-          claude -p "freshatlas 已克隆在 ./freshatlas（已检出目标 commit ${FRESHATLAS_NEW_COMMIT}）。
-          上次已成功处理的 commit 为 '${FRESHATLAS_OLD_COMMIT}'（若为空字符串表示首次运行、无基准），目标 commit 为 ${FRESHATLAS_NEW_COMMIT}。
+          if [ -n "$(gh pr list --repo "$REPO" --head "$branch" --state open --json number --jq '.[].number')" ]; then
+            echo "分支 $branch 已有打开的 PR，已更新"
+            exit 0
+          fi
+          {
+            echo "自动同步 [柏油图谱（freshatlas）](https://github.com/${FRESHATLAS_REPO}) 的宿舍对比图。"
+            echo
+            echo "- 来源 commit：${FRESHATLAS_REPO}@${FRESHATLAS_NEW_COMMIT}"
+            echo "- 宿舍表按校区拆分为沙河、本部两张图，并同步了文档中给 byrdocs-bot 读的文字版表格"
+            echo "- 图片协议：CC BY-NC-SA 4.0"
+            echo
+            echo "Codex 的说明（模型生成，仅供参考）："
+            echo
+            # 去掉 @ 提及，避免模型输出 ping 到别人
+            jq -r '.summary | gsub("@"; "@\u200b") | split("\n") | map("> " + .) | join("\n")' "$RUNNER_TEMP/result.json"
+          } > "$RUNNER_TEMP/pr-body.md"
+          gh pr create --repo "$REPO" --base main --head "$branch" \
+            --title "docs: 同步柏油图谱宿舍对比图（沙河 / 本部分图）" --body-file "$RUNNER_TEMP/pr-body.md"
 
-          ${PROMPT}" \
-            --model opus \
-            --output-format stream-json \
-            --permission-mode bypassPermissions \
-            --verbose
+      - name: Mark commit as processed
+        run: |
+          mkdir -p freshatlas
+          printf '%s\n' "$FRESHATLAS_NEW_COMMIT" > freshatlas/.last-polled-commit
 
-      # 仅当 Claude 决定推进时（成功处理或确认无变化）才会写出 freshatlas/.last-polled-commit，
-      # 此时保存到缓存；若 Claude 因失败（如编译错误）未写出该文件，则不保存，下次重试。
       - name: Save last processed commit
-        if: ${{ always() && hashFiles('freshatlas/.last-polled-commit') != '' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: freshatlas/.last-polled-commit
           key: freshatlas-polled-${{ github.run_id }}
-
