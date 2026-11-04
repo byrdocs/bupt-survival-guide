@@ -1,0 +1,54 @@
+name: Setup Typst and fonts
+description: 安装 freshatlas 宿舍图需要的 Typst 版本和字体
+
+runs:
+  using: composite
+  steps:
+    - name: Install Typst
+      uses: typst-community/setup-typst@48aeee7543d37f01afd1ffb27307dc277387ba13 # v4
+      with:
+        typst-version: 0.15.0
+
+    # Download pinned upstream font files directly. Fontist's native Ruby
+    # dependencies can fail before any fonts are installed on the runner.
+    - name: Install STIX Two and Fira Code
+      shell: bash
+      run: |
+        set -euo pipefail
+        FONT_DIR="$HOME/.local/share/fonts"
+        mkdir -p "$FONT_DIR/stix-two" "$FONT_DIR/fira-code"
+        for font in STIXTwoMath-Regular STIXTwoText-Regular STIXTwoText-Italic \
+          STIXTwoText-Medium STIXTwoText-MediumItalic STIXTwoText-SemiBold \
+          STIXTwoText-SemiBoldItalic STIXTwoText-Bold STIXTwoText-BoldItalic; do
+          curl --fail --location --retry 3 \
+            "https://raw.githubusercontent.com/stipub/stixfonts/v2.13b171/fonts/static_otf/$font.otf" \
+            --output "$FONT_DIR/stix-two/$font.otf"
+        done
+        curl --fail --location --retry 3 \
+          https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip \
+          --output "$RUNNER_TEMP/Fira_Code.zip"
+        unzip -q "$RUNNER_TEMP/Fira_Code.zip" 'ttf/*' -d "$FONT_DIR/fira-code"
+
+    - name: Install Source Han Serif / Sans SC
+      shell: bash
+      run: |
+        set -euo pipefail
+        curl --fail --location --retry 3 https://github.com/adobe-fonts/source-han-serif/releases/download/2.003R/09_SourceHanSerifSC.zip -o "$RUNNER_TEMP/SourceHanSerifSC.zip"
+        curl --fail --location --retry 3 https://github.com/adobe-fonts/source-han-sans/releases/download/2.005R/09_SourceHanSansSC.zip -o "$RUNNER_TEMP/SourceHanSansSC.zip"
+        unzip -q "$RUNNER_TEMP/SourceHanSerifSC.zip" -d ~/.local/share/fonts/source-han-serif
+        unzip -q "$RUNNER_TEMP/SourceHanSansSC.zip" -d ~/.local/share/fonts/source-han-sans
+        fc-cache -f
+
+    - name: Check typst & fonts
+      shell: bash
+      run: |
+        set -euo pipefail
+        FONTS=$(typst fonts)
+        for family in "STIX Two Math" "STIX Two Text" "Fira Code" \
+          "Source Han Serif SC" "Source Han Sans SC"; do
+          if ! grep -Fxq "$family" <<< "$FONTS"; then
+            echo "::error::Missing required font: $family"
+            exit 1
+          fi
+          echo "Found font: $family"
+        done
