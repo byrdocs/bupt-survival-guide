@@ -282,8 +282,8 @@ jobs:
         working-directory: freshatlas
         run: |
           set -euo pipefail
-          typst compile content/dormitory-shahe.typ "../src/assets/freshatlas-沙河宿舍对比.png" --root . --input release= --ppi 300
-          typst compile content/dormitory-benbu.typ "../src/assets/freshatlas-本部宿舍对比.png" --root . --input release= --ppi 300
+          typst compile content/dormitory-shahe.typ "../src/assets/freshatlas-沙河宿舍对比.png" --root . --input release= --input single=true --ppi 300
+          typst compile content/dormitory-benbu.typ "../src/assets/freshatlas-本部宿舍对比.png" --root . --input release= --input single=true --ppi 300
 
       - name: Setup Node
         if: steps.result.outputs.status == 'updated'
